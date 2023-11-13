@@ -13,9 +13,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navbar />
+      <Navbar  />
 
-      <Center mt="100px">
+      <Center mt="150px">
         <Heading>Site em construção</Heading>
       </Center>
       <Center>
