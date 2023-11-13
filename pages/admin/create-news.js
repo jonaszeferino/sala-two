@@ -86,7 +86,7 @@ const App = () => {
         />
         <br />
         <ChakraProvider>
-          <FormControl id="corinthiansScore">
+          <FormControl>
             <FormLabel>Título Para A Home</FormLabel>
             <Input
               type="text"
@@ -95,7 +95,7 @@ const App = () => {
             />
           </FormControl>
           <br />
-          <FormControl id="corinthiansScore">
+          <FormControl>
             <FormLabel>Autor</FormLabel>
             <Input
               type="text"
