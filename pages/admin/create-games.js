@@ -18,8 +18,8 @@ import Sidebar from "../../components/Sidebar";
 import { useState } from "react";
 
 export default function PalpitesForm() {
-  const [homeScore, setHomeScore] = useState(0);
-  const [awayScore, setAwayScore] = useState(0);
+  const [homeScore, setHomeScore] = useState("");
+  const [awayScore, setAwayScore] = useState("");
 
   const handleHomeScoreChange = (event) => {
     setGremioScore(event.target.value);
