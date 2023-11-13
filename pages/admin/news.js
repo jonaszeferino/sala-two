@@ -79,6 +79,15 @@ const App = () => {
         />
         <br />
         <ChakraProvider>
+        <FormControl id="corinthiansScore">
+            <FormLabel>Título Para A Home</FormLabel>
+            <Input
+              type="text"
+              value={jornalist}
+              onChange={handleEditorChange}
+            />
+          </FormControl>
+          <br/>
           <FormControl id="corinthiansScore">
             <FormLabel>Autor</FormLabel>
             <Input
