@@ -38,7 +38,7 @@ const Navbar = () => {
                 Criação de Times
               </Text>
             </Link>
-            <Link href="/colunas">
+            <Link href="/admin/news">
               <Text color="white" py={2}>
                 Notícias
               </Text>
