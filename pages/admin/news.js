@@ -18,21 +18,30 @@ import {
 } from "@chakra-ui/react";
 
 const App = () => {
-  const [content, setContent] = useState(""); // Para armazenar o conteúdo da notícia
-  const [jornalist, setJornalist] = useState(""); // Para armazenar o conteúdo da notícia
+  const [content, setContent] = useState(""); 
+  const [journalist, setJournalist] = useState("");
+  const [title, setTitle] = useState(""); 
 
   const handleEditorChange = (content, editor) => {
-    setContent(content); // Atualiza o estado com o conteúdo do editor
+    setContent(content); 
+  };
+
+  const handleJournalistChange = (journalist) => {
+    setJournalist(journalist); 
+  };
+
+  const handleTitleChange = (title) => {
+    setTitle(title); 
   };
 
   const saveNews = () => {
-    // Aqui você irá realizar a chamada para a API para salvar a notícia
     const data = {
       news: content,
-      journalist_name: "Nome do jornalista", // Substitua com o nome do jornalista adequado
+      journalist_name: journalist,
+      title: title,
     };
 
-    fetch("https://seusite.com/api/postNews", {
+    fetch("/api/postNews", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,11 +49,9 @@ const App = () => {
       body: JSON.stringify(data),
     })
       .then((response) => {
-        // Tratar a resposta da requisição aqui (por exemplo, exibir uma mensagem de sucesso)
         console.log("Notícia salva com sucesso!", response);
       })
       .catch((error) => {
-        // Lidar com possíveis erros na requisição
         console.error("Erro ao salvar notícia:", error);
       });
   };
@@ -54,7 +61,7 @@ const App = () => {
       <Sidebar />
 
       <div
-        style={{ marginLeft: "250px", marginRight: "50px", marginTop: "100px" }}
+        style={{ marginLeft: "180px", marginRight: "50px", marginTop: "100px" }}
       >
         <Editor
           apiKey="ccpaulbj9jkbgr7ftwb35htdbzziawivodom2f71ce6eb7mz"
@@ -74,26 +81,26 @@ const App = () => {
                 Promise.reject("See docs to implement AI Assistant")
               ),
           }}
-          initialValue="Welcome to TinyMCE!"
-          onEditorChange={handleEditorChange} // Quando o conteúdo é alterado, atualiza o estado
+          initialValue="Comece a editar sua notícia, caso queira adicionar uma imagem, é preciso coloar o link da mesmo, imgur é uma boa dica "
+          onEditorChange={handleEditorChange}
         />
         <br />
         <ChakraProvider>
-        <FormControl id="corinthiansScore">
+          <FormControl id="corinthiansScore">
             <FormLabel>Título Para A Home</FormLabel>
             <Input
               type="text"
-              value={jornalist}
-              onChange={handleEditorChange}
+              value={title}
+              onChange={handleTitleChange}
             />
           </FormControl>
-          <br/>
+          <br />
           <FormControl id="corinthiansScore">
             <FormLabel>Autor</FormLabel>
             <Input
               type="text"
-              value={jornalist}
-              onChange={handleEditorChange}
+              value={journalist}
+              onChange={handleJournalistChange}
             />
           </FormControl>
           <br />
