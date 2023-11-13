@@ -13,9 +13,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navbar  />
+      <Navbar />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
 
-      <Center mt="150px">
+      <Center mt="100px">
         <Heading>Site em construção</Heading>
       </Center>
       <Center>
@@ -60,15 +68,14 @@ export default function Home() {
           </a>
         </div>
       </Box>
-
-      <Box>
+      <div>
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
           crossorigin="anonymous"
         ></script>
-      </Box>
+      </div>
     </ChakraProvider>
   );
 }
-//test
+
