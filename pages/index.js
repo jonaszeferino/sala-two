@@ -3,7 +3,6 @@ import { ChakraProvider, Box, Text, Center, Heading } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 
-
 export default function Home() {
   return (
     <ChakraProvider>
@@ -15,16 +14,8 @@ export default function Home() {
       </Head>
 
       <Navbar />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
 
-      <Center>
+      <Center mt="100px">
         <Heading>Site em construção</Heading>
       </Center>
       <Center>
@@ -68,6 +59,14 @@ export default function Home() {
             <FaTiktok />
           </a>
         </div>
+      </Box>
+
+      <Box>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
+          crossorigin="anonymous"
+        ></script>
       </Box>
     </ChakraProvider>
   );
