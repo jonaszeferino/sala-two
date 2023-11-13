@@ -71,7 +71,6 @@ export default function PalpitesForm() {
   };
 
   //Get
-
   const getClubs = async () => {
     setIsLoading(true);
     try {
@@ -184,7 +183,9 @@ export default function PalpitesForm() {
               </Box>
             ))
           ) : (
-            <Text>Loading...</Text>
+            <Center mt="100px">
+              <Text>Loading...</Text>
+            </Center>
           )}
         </Grid>
       </ChakraProvider>

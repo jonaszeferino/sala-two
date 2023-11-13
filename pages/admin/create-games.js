@@ -10,19 +10,22 @@ import {
   Text,
   Center,
   HStack,
+  Switch,
+  Stack,
+  Heading,
 } from "@chakra-ui/react";
 import Sidebar from "../../components/Sidebar";
 import { useState } from "react";
 
 export default function PalpitesForm() {
-  const [gremioScore, setGremioScore] = useState(0);
-  const [corinthiansScore, setCorinthiansScore] = useState(0);
+  const [homeScore, setHomeScore] = useState(0);
+  const [awayScore, setAwayScore] = useState(0);
 
-  const handleGremioScoreChange = (event) => {
+  const handleHomeScoreChange = (event) => {
     setGremioScore(event.target.value);
   };
 
-  const handleCorinthiansScoreChange = (event) => {
+  const handleAwayScoreChange = (event) => {
     setCorinthiansScore(event.target.value);
   };
 
@@ -42,46 +45,68 @@ export default function PalpitesForm() {
       </Head>
 
       <Sidebar />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
+  
 
-      <Center>
-        <Text>Palpites</Text>
+      <Center mt="50px" mb="50px">
+        <Heading>Partidas</Heading>
       </Center>
 
       <ChakraProvider>
-        <VStack spacing={4} align="stretch">
-          <HStack spacing={4}>
-            <FormControl id="gremioScore">
-              <FormLabel>Placar do Grêmio</FormLabel>
-              <Input
-                type="number"
-                value={gremioScore}
-                onChange={handleGremioScoreChange}
-              />
-            </FormControl>
+        <Center ml="100px">
+          <VStack spacing={4} align="stretch">
+            <HStack spacing={4}>
+              <FormControl id="homeScore">
+                <FormLabel>Em casa</FormLabel>
+                <Input
+                  type="text"
+                  value={homeScore}
+                  onChange={handleHomeScoreChange}
+                />
+              </FormControl>
 
-            <FormControl id="corinthiansScore">
-              <FormLabel>Placar do Corinthians</FormLabel>
-              <Input
-                type="number"
-                value={corinthiansScore}
-                onChange={handleCorinthiansScoreChange}
-              />
-            </FormControl>
-          </HStack>
+              <FormControl id="awayScore">
+                <FormLabel>Fora de Casa</FormLabel>
+                <Input
+                  type="text"
+                  value={awayScore}
+                  onChange={handleAwayScoreChange}
+                />
+              </FormControl>
 
-          <Button colorScheme="blue" onClick={handleSubmit}>
-            Enviar Palpites
-          </Button>
-        </VStack>
+              <FormControl id="corinthiansScore">
+                <FormLabel>Data e hora do Jogo</FormLabel>
+                <Input
+                  type="datetime-local"
+                  value={awayScore}
+                  onChange={handleAwayScoreChange}
+                />
+              </FormControl>
+
+              <FormControl id="corinthiansScore">
+                <FormLabel>Campeonato</FormLabel>
+                <Input
+                  type="text"
+                  value={awayScore}
+                  onChange={handleAwayScoreChange}
+                />
+              </FormControl>
+              <FormControl id="corinthiansScore">
+                <Stack direction="row">
+                  <Switch colorScheme="teal" size="lg" />
+                </Stack>
+              </FormControl>
+            </HStack>
+
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Salvar Partida
+            </Button>
+          </VStack>
+        </Center>
       </ChakraProvider>
+
+      <Center mt="150px">
+        <Heading>Partidas Salvas</Heading>
+      </Center>
     </ChakraProvider>
   );
 }

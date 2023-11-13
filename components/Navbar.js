@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Link from "next/link";
 import {
   Box,
@@ -19,7 +18,7 @@ const Navbar = () => {
         w="100%"
       >
         <Flex align="center" justify="center">
-        <Text color="white" px={4}>
+          <Text color="white" px={4}>
             Colunas
           </Text>
           <Text color="white" px={4}>
