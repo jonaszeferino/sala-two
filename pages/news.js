@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Head from 'next/head'
 import {
   ChakraProvider,
   Box,
@@ -12,45 +12,45 @@ import {
   Button,
   Image,
   Link,
-} from "@chakra-ui/react";
-import Navbar from "../components/Navbar";
-import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import styles from "../styles/Navbar.module.css";
+} from '@chakra-ui/react'
+import Navbar from '../components/Navbar'
+import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import styles from '../styles/Navbar.module.css'
 
 export default function Home() {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState([]);
+  const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState([])
 
   const getNews = async () => {
     try {
       const response = await fetch(`/api/external/newsApi`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-      });
+      })
       if (response.ok) {
-        const userData = await response.json();
-        console.log("Dados do usuário:", userData);
-        setIsLoading(false);
-        setData(userData);
+        const userData = await response.json()
+        console.log('Dados do usuário:', userData)
+        setIsLoading(false)
+        setData(userData)
       } else {
         if (response.status === 404) {
-          setIsLoading(false);
+          setIsLoading(false)
         }
-        console.error("Erro ao buscar o usuário:", response.status);
+        console.error('Erro ao buscar o usuário:', response.status)
       }
     } catch (error) {
-      console.error("Erro inesperado:", error);
+      console.error('Erro inesperado:', error)
     }
-  };
+  }
 
   useEffect(() => {
-    console.log("Chamou o useEffect");
-    getNews();
-    setIsLoading(true);
-  }, []);
+    console.log('Chamou o useEffect')
+    getNews()
+    setIsLoading(true)
+  }, [])
 
   return (
     <ChakraProvider>
@@ -64,10 +64,7 @@ export default function Home() {
         <meta property="og:title" content="Sala de Secacao" />
         <meta property="og:description" content="Site do Sala de Secacao" />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO"
-        />
+        <meta property="og:image" content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO" />
         <meta property="og:url" content="URL_DA_PAGINA" />
 
         {/* Meta tags para Twitter */}
@@ -83,15 +80,15 @@ export default function Home() {
         {data.map((item, index) => (
           <Card
             key={index}
-            direction={{ base: "column", sm: "row" }}
+            direction={{ base: 'column', sm: 'row' }}
             overflow="hidden"
             variant="outline"
-            style={{ margin: "10px" }}
+            style={{ margin: '10px' }}
             mt="120px"
           >
             <Image
               objectFit="cover"
-              maxW={{ base: "100%", sm: "350px" }}
+              maxW={{ base: '100%', sm: '350px' }}
               src={item.urlToImage}
               alt="Imagem da Noticia"
             />
@@ -105,17 +102,14 @@ export default function Home() {
               </CardBody>
               <CardFooter>
                 {(item.title &&
-                  (item.title.includes("Gremio") ||
-                    item.title.includes("Grêmio"))) ||
+                  (item.title.includes('Gremio') || item.title.includes('Grêmio'))) ||
                 (item.url &&
-                  (item.url.includes("Gremio") ||
-                    item.url.includes("Grêmio"))) ||
+                  (item.url.includes('Gremio') || item.url.includes('Grêmio'))) ||
                 (item.author &&
-                  (item.author.includes("Gremio") ||
-                    item.author.includes("Grêmio"))) ||
+                  (item.author.includes('Gremio') || item.author.includes('Grêmio'))) ||
                 (item.description &&
-                  (item.description.includes("Gremio") ||
-                    item.description.includes("Grêmio"))) ? (
+                  (item.description.includes('Gremio') ||
+                    item.description.includes('Grêmio'))) ? (
                   <Button variant="solid" colorScheme="blue">
                     <Link href={item.url} target="_blank">
                       Veja a notícia
@@ -134,13 +128,13 @@ export default function Home() {
         ))}
 
         <Box pt="72px" p="20px">
-          {" "}
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          {' '}
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <a
               href="https://twitter.com/Saladesecacao"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: "50px", padding: "20px" }}
+              style={{ fontSize: '50px', padding: '20px' }}
             >
               <FaTwitter />
             </a>
@@ -149,7 +143,7 @@ export default function Home() {
               href="https://www.youtube.com/@SaladeSecacao"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: "50px", padding: "20px" }}
+              style={{ fontSize: '50px', padding: '20px' }}
             >
               <FaYoutube />
             </a>
@@ -157,7 +151,7 @@ export default function Home() {
               href="https://www.instagram.com/saladesecacao/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: "50px", padding: "20px" }}
+              style={{ fontSize: '50px', padding: '20px' }}
             >
               <FaInstagram />
             </a>
@@ -165,7 +159,7 @@ export default function Home() {
               href="https://www.tiktok.com/@saladeseca?lang=pt-BR"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: "50px", padding: "20px" }}
+              style={{ fontSize: '50px', padding: '20px' }}
             >
               <FaTiktok />
             </a>
@@ -176,9 +170,9 @@ export default function Home() {
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
-          crossorigin="anonymous"
+          crossOrigin="anonymous"
         ></script>
       </div>
     </ChakraProvider>
-  );
+  )
 }
