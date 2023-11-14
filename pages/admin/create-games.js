@@ -30,7 +30,6 @@ export default function PalpitesForm() {
   };
 
   const handleSubmit = () => {
-    // Aqui você pode enviar os palpites, fazer validações ou qualquer outra ação necessária
     console.log(
       `Palpite: Grêmio ${gremioScore} x ${corinthiansScore} Corinthians`
     );
@@ -45,7 +44,6 @@ export default function PalpitesForm() {
       </Head>
 
       <Sidebar />
-  
 
       <Center mt="50px" mb="50px">
         <Heading>Partidas</Heading>

@@ -2,7 +2,9 @@ import styles from "../styles/Footer.module.css"
 import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 import { ChakraProvider, Box, Text, Center } from "@chakra-ui/react";
 
-export default function Footer() {
+
+const Footer = () => {
+ 
   return (
     <footer className={styles.footer}>
       <ChakraProvider>
@@ -48,3 +50,9 @@ export default function Footer() {
     </footer>
   );
 }
+
+
+export default Footer;
+
+
+

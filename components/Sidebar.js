@@ -10,7 +10,7 @@ import {
   Grid,
 } from "@chakra-ui/react";
 
-const Navbar = () => {
+const Sidebar = () => {
   return (
     <ChakraProvider>
       <Grid templateColumns="200px 1fr" gap={4}>
@@ -56,4 +56,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Sidebar;
