@@ -18,30 +18,32 @@ import {
 } from "@chakra-ui/react";
 
 const App = () => {
-  const [content, setContent] = useState(""); 
+  const [content, setContent] = useState("");
   const [journalist, setJournalist] = useState("");
-  const [title, setTitle] = useState(""); 
+  const [title, setTitle] = useState("");
+  const [isLoading, setIsLoading] = useState("");
 
   const handleEditorChange = (content, editor) => {
-    setContent(content); 
+    setContent(content);
   };
 
-  const handleJournalistChange = (journalist) => {
-    setJournalist(journalist); 
+  const handleJournalistChange = (event) => {
+    setJournalist(event.target.value);
   };
 
-  const handleTitleChange = (title) => {
-    setTitle(title); 
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
   };
 
   const saveNews = () => {
+    setIsLoading(true);
     const data = {
       news: content,
       journalist_name: journalist,
       title: title,
     };
 
-    fetch("/api/postNews", {
+    fetch("http://localhost:3000/api/postNews", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,9 +52,11 @@ const App = () => {
     })
       .then((response) => {
         console.log("Notícia salva com sucesso!", response);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Erro ao salvar notícia:", error);
+        setIsLoading(false);
       });
   };
 
@@ -88,11 +92,7 @@ const App = () => {
         <ChakraProvider>
           <FormControl>
             <FormLabel>Título Para A Home</FormLabel>
-            <Input
-              type="text"
-              value={title}
-              onChange={handleTitleChange}
-            />
+            <Input type="text" value={title} onChange={handleTitleChange} />
           </FormControl>
           <br />
           <FormControl>
@@ -108,6 +108,7 @@ const App = () => {
             Salvar Notícia
           </Button>
         </ChakraProvider>
+        {isLoading ? <Text>Carregando</Text> : null}
       </div>
     </>
   );

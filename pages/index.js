@@ -11,6 +11,22 @@ export default function Home() {
         <meta name="description" content="Site do Sala de Secacao" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+
+        {/* Meta tags para Open Graph (Facebook) */}
+        <meta property="og:title" content="Sala de Secacao" />
+        <meta property="og:description" content="Site do Sala de Secacao" />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:image"
+          content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO"
+        />
+        <meta property="og:url" content="URL_DA_PAGINA" />
+
+        {/* Meta tags para Twitter */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Sala de Secacao" />
+        <meta name="twitter:description" content="Site do Sala de Secacao" />
+        <meta name="twitter:image" content="URL_DA_IMAGEM_PARA_TWITTER" />
       </Head>
 
       <Navbar />
@@ -78,4 +94,3 @@ export default function Home() {
     </ChakraProvider>
   );
 }
-

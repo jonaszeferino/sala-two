@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { jornalist_name, news } = req.body;
+  const { jornalist_name, news, title } = req.body;
 
   let date = moment().tz("UTC-03:00").toDate();
   const collection = client.db("sala").collection("news");
@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     const document = {
       news: news,
       jornalist_name: jornalist_name,
+      title: title,
       created_at: date,
     };
 
