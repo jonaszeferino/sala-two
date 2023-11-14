@@ -1,5 +1,6 @@
 import NewsAPI from "newsapi";
 import { handleError, handleNewsResponse } from "../../../utils/errorHandler";
+import { calculateDateAgo } from "../../../utils/date";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -32,6 +33,8 @@ const fetchNews = async (apiKey) => {
       sortBy: "relevancy",
       domains:
         "clicrbs.com.br, ge.globo.com/rs/futebol/times/gremio/, ge.globo.com/rs/futebol/times/internacional/",
+      from: calculateDateAgo(21),
+      to: calculateDateAgo(0),
     };
     return await newsapi.v2.everything(queryOptions);
   } catch (error) {
