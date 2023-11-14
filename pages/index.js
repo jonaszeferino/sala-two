@@ -1,7 +1,7 @@
-import Head from "next/head";
-import { ChakraProvider, Box, Text, Center, Heading } from "@chakra-ui/react";
-import Navbar from "../components/Navbar";
-import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
+import Head from 'next/head'
+import { ChakraProvider, Box, Text, Center, Heading } from '@chakra-ui/react'
+import Navbar from '../components/Navbar'
+import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from 'react-icons/fa'
 
 export default function Home() {
   return (
@@ -16,10 +16,7 @@ export default function Home() {
         <meta property="og:title" content="Sala de Secacao" />
         <meta property="og:description" content="Site do Sala de Secacao" />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO"
-        />
+        <meta property="og:image" content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO" />
         <meta property="og:url" content="URL_DA_PAGINA" />
 
         {/* Meta tags para Twitter */}
@@ -47,13 +44,13 @@ export default function Home() {
       </Center>
 
       <Box pt="72px" p="20px">
-        {" "}
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        {' '}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <a
             href="https://twitter.com/Saladesecacao"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
+            style={{ fontSize: '50px', padding: '20px' }}
           >
             <FaTwitter />
           </a>
@@ -62,7 +59,7 @@ export default function Home() {
             href="https://www.youtube.com/@SaladeSecacao"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
+            style={{ fontSize: '50px', padding: '20px' }}
           >
             <FaYoutube />
           </a>
@@ -70,7 +67,7 @@ export default function Home() {
             href="https://www.instagram.com/saladesecacao/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
+            style={{ fontSize: '50px', padding: '20px' }}
           >
             <FaInstagram />
           </a>
@@ -78,7 +75,7 @@ export default function Home() {
             href="https://www.tiktok.com/@saladeseca?lang=pt-BR"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
+            style={{ fontSize: '50px', padding: '20px' }}
           >
             <FaTiktok />
           </a>
@@ -88,9 +85,9 @@ export default function Home() {
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
-          crossorigin="anonymous"
+          crossOrigin="anonymous"
         ></script>
       </div>
     </ChakraProvider>
-  );
+  )
 }
