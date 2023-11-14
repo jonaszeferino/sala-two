@@ -27,7 +27,7 @@ const fetchNews = async (apiKey) => {
 
   try {
     const queryOptions = {
-      q: "Gremio OR Inter",
+      q: "Grêmio OR Inter",
       language: "pt",
       sortBy: "relevancy",
       domains:
