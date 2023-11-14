@@ -33,6 +33,7 @@ export default function PalpitesForm() {
     getClubs();
     setIsLoading(true);
   }, []);
+  
   const handleClubNameChange = (event) => {
     setClubName(event.target.value);
   };

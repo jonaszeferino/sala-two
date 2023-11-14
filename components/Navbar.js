@@ -7,6 +7,7 @@ import {
   Image,
   Center,
 } from "@chakra-ui/react";
+import styles from "../styles/Navbar.module.css"
 
 const Navbar = () => {
   return (
@@ -16,6 +17,8 @@ const Navbar = () => {
         py={4}
         position="fixed"
         w="100%"
+        className={styles.fixedNavbar}
+        zIndex="1000"
       >
         <Flex align="center" justify="center">
           <Text color="white" px={4}>

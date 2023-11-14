@@ -15,8 +15,43 @@ import {
 } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import styles from "../styles/Navbar.module.css";
 
 export default function Home() {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState([]);
+
+  const getNews = async () => {
+    try {
+      const response = await fetch(`/api/external/newsApi`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        console.log("Dados do usuário:", userData);
+        setIsLoading(false);
+        setData(userData);
+      } else {
+        if (response.status === 404) {
+          setIsLoading(false);
+        }
+        console.error("Erro ao buscar o usuário:", response.status);
+      }
+    } catch (error) {
+      console.error("Erro inesperado:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Chamou o useEffect");
+    getNews();
+    setIsLoading(true);
+  }, []);
+
   return (
     <ChakraProvider>
       <Head>
@@ -43,90 +78,100 @@ export default function Home() {
       </Head>
 
       <Navbar />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
 
-      <Center>
-        <Card
-          direction={{ base: "column", sm: "row" }}
-          overflow="hidden"
-          variant="outline"
-        >
-          <Image
-            objectFit="cover"
-            maxW={{ base: "100%", sm: "200px" }}
-            src="http://diariogaucho.rbsdirect.com.br/imagesrc/45391726.jpg?w=600"
-            alt="Imagem da Noticia"
-          />
+      <Box mt="150px">
+        {data.map((item, index) => (
+          <Card
+            key={index}
+            direction={{ base: "column", sm: "row" }}
+            overflow="hidden"
+            variant="outline"
+            style={{ margin: "10px" }}
+            mt="120px"
+          >
+            <Image
+              objectFit="cover"
+              maxW={{ base: "100%", sm: "350px" }}
+              src={item.urlToImage}
+              alt="Imagem da Noticia"
+            />
 
-          <Stack>
-            <CardBody>
-              <Heading size="md">
-                Luciano Périco: alerta ligado no Inter
-              </Heading>
-              <Text py="2">Colorado está próximo do Z-4 do Brasileirão</Text>
-              <Text>Fonte: Clicrbs.com.br</Text>
-              <Text>20/20/2023 09:00:20</Text>
-            </CardBody>
+            <Stack>
+              <CardBody>
+                <Heading size="md">{item.title}</Heading>
+                <Text py="2">{item.description}</Text>
+                <Text>Fonte: {item.source.name}</Text>
+                <Text>{item.publishedAt}</Text>
+              </CardBody>
+              <CardFooter>
+                {(item.title &&
+                  (item.title.includes("Gremio") ||
+                    item.title.includes("Grêmio"))) ||
+                (item.url &&
+                  (item.url.includes("Gremio") ||
+                    item.url.includes("Grêmio"))) ||
+                (item.author &&
+                  (item.author.includes("Gremio") ||
+                    item.author.includes("Grêmio"))) ||
+                (item.description &&
+                  (item.description.includes("Gremio") ||
+                    item.description.includes("Grêmio"))) ? (
+                  <Button variant="solid" colorScheme="blue">
+                    <Link href={item.url} target="_blank">
+                      Veja a notícia
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="solid" colorScheme="red">
+                    <Link href={item.url} target="_blank">
+                      Veja a notícia
+                    </Link>
+                  </Button>
+                )}
+              </CardFooter>
+            </Stack>
+          </Card>
+        ))}
 
-            <CardFooter>
-              <Button variant="solid" colorScheme="red">
-                <Link
-                  href="http://diariogaucho.clicrbs.com.br/rs/esporte/noticia/2023/10/luciano-perico-alerta-ligado-no-inter-34365732.html"
-                  target="_blank"
-                >
-                  Veja a notícia
-                </Link>
-              </Button>
-            </CardFooter>
-          </Stack>
-        </Card>
-      </Center>
-      <Box pt="72px" p="20px">
-        {" "}
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <a
-            href="https://twitter.com/Saladesecacao"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
-          >
-            <FaTwitter />
-          </a>
+        <Box pt="72px" p="20px">
+          {" "}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <a
+              href="https://twitter.com/Saladesecacao"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "50px", padding: "20px" }}
+            >
+              <FaTwitter />
+            </a>
 
-          <a
-            href="https://www.youtube.com/@SaladeSecacao"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
-          >
-            <FaYoutube />
-          </a>
-          <a
-            href="https://www.instagram.com/saladesecacao/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
-          >
-            <FaInstagram />
-          </a>
-          <a
-            href="https://www.tiktok.com/@saladeseca?lang=pt-BR"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: "50px", padding: "20px" }}
-          >
-            <FaTiktok />
-          </a>
-        </div>
+            <a
+              href="https://www.youtube.com/@SaladeSecacao"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "50px", padding: "20px" }}
+            >
+              <FaYoutube />
+            </a>
+            <a
+              href="https://www.instagram.com/saladesecacao/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "50px", padding: "20px" }}
+            >
+              <FaInstagram />
+            </a>
+            <a
+              href="https://www.tiktok.com/@saladeseca?lang=pt-BR"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "50px", padding: "20px" }}
+            >
+              <FaTiktok />
+            </a>
+          </div>
+        </Box>
       </Box>
-
       <div>
         <script
           async
