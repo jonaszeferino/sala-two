@@ -30,12 +30,12 @@ const Sidebar = () => {
             <br/>
             <Link href="/admin/create-games">
               <Text color="white" py={2}>
-                Criação de jogos
+                Jogos
               </Text>
             </Link>
             <Link href="/admin/create-club">
               <Text color="white" py={2}>
-                Criação de Times
+               Times
               </Text>
             </Link>
             <Link href="/admin/create-news">
