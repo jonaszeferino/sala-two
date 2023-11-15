@@ -85,7 +85,7 @@ const App = () => {
                 Promise.reject("See docs to implement AI Assistant")
               ),
           }}
-          initialValue="Comece a editar sua notícia, caso queira adicionar uma imagem, é preciso coloar o link da mesmo, imgur é uma boa dica "
+          initialValue="Comece a editar sua notícia, caso queira adicionar uma imagem, é preciso colocar o link da mesma, imgur é uma boa dica "
           onEditorChange={handleEditorChange}
         />
         <br />
