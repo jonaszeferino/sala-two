@@ -43,7 +43,7 @@ const App = () => {
       title: title,
     };
 
-    fetch("http://localhost:3000/api/postNews", {
+    fetch("/api/postNews", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

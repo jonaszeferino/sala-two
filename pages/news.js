@@ -1,4 +1,4 @@
-import Head from 'next/head'
+import Head from 'next/head';
 import {
   ChakraProvider,
   Box,
@@ -12,15 +12,15 @@ import {
   Button,
   Image,
   Link,
-} from '@chakra-ui/react'
-import Navbar from '../components/Navbar'
-import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
-import styles from '../styles/Navbar.module.css'
+} from '@chakra-ui/react';
+import Navbar from '../components/Navbar';
+import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 export default function Home() {
-  const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState([])
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState([]);
 
   const getNews = async () => {
     try {
@@ -29,28 +29,28 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-      })
+      });
       if (response.ok) {
-        const userData = await response.json()
-        console.log('Dados do usuário:', userData)
-        setIsLoading(false)
-        setData(userData)
+        const userData = await response.json();
+        console.log('Dados do usuário:', userData);
+        setIsLoading(false);
+        setData(userData);
       } else {
         if (response.status === 404) {
-          setIsLoading(false)
+          setIsLoading(false);
         }
-        console.error('Erro ao buscar o usuário:', response.status)
+        console.error('Erro ao buscar o usuário:', response.status);
       }
     } catch (error) {
-      console.error('Erro inesperado:', error)
+      console.error('Erro inesperado:', error);
     }
-  }
+  };
 
   useEffect(() => {
-    console.log('Chamou o useEffect')
-    getNews()
-    setIsLoading(true)
-  }, [])
+    console.log('Chamou o useEffect');
+    getNews();
+    setIsLoading(true);
+  }, []);
 
   return (
     <ChakraProvider>
@@ -64,7 +64,10 @@ export default function Home() {
         <meta property="og:title" content="Sala de Secacao" />
         <meta property="og:description" content="Site do Sala de Secacao" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO" />
+        <meta
+          property="og:image"
+          content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO"
+        />
         <meta property="og:url" content="URL_DA_PAGINA" />
 
         {/* Meta tags para Twitter */}
@@ -75,8 +78,10 @@ export default function Home() {
       </Head>
 
       <Navbar />
-
-      <Box mt="150px">
+      <Center>
+        <Heading mt="200px">Notícias Externas da Dupa Grenal</Heading>
+      </Center>
+      <Box mt="20px" ml="250px" mr="250px" borderRadius="10px">
         {data.map((item, index) => (
           <Card
             key={index}
@@ -89,24 +94,38 @@ export default function Home() {
             <Image
               objectFit="cover"
               maxW={{ base: '100%', sm: '350px' }}
+              boxSize="350px"
+              borderRadius="10px"
               src={item.urlToImage}
               alt="Imagem da Noticia"
+              loading="lazy"
             />
 
             <Stack>
               <CardBody>
                 <Heading size="md">{item.title}</Heading>
                 <Text py="2">{item.description}</Text>
-                <Text>Fonte: {item.source.name}</Text>
-                <Text>{item.publishedAt}</Text>
+                <Text>{item.content.slice(0, 100)}....</Text>
+
+                <Text></Text>
+                <br />
+                <Text>
+                  Fonte: {item.source.name}{' '}
+                  {item.publishedAt
+                    ? format(new Date(item.publishedAt), 'dd/MM/yyyy')
+                    : ''}{' '}
+                </Text>
               </CardBody>
               <CardFooter>
                 {(item.title &&
-                  (item.title.includes('Gremio') || item.title.includes('Grêmio'))) ||
+                  (item.title.includes('Gremio') ||
+                    item.title.includes('Grêmio'))) ||
                 (item.url &&
-                  (item.url.includes('Gremio') || item.url.includes('Grêmio'))) ||
+                  (item.url.includes('Gremio') ||
+                    item.url.includes('Grêmio'))) ||
                 (item.author &&
-                  (item.author.includes('Gremio') || item.author.includes('Grêmio'))) ||
+                  (item.author.includes('Gremio') ||
+                    item.author.includes('Grêmio'))) ||
                 (item.description &&
                   (item.description.includes('Gremio') ||
                     item.description.includes('Grêmio'))) ? (
@@ -118,7 +137,7 @@ export default function Home() {
                 ) : (
                   <Button variant="solid" colorScheme="red">
                     <Link href={item.url} target="_blank">
-                      Veja a notícia
+                      Veja a Notícia
                     </Link>
                   </Button>
                 )}
@@ -166,13 +185,13 @@ export default function Home() {
           </div>
         </Box>
       </Box>
-      <div>
+      {/* <div>
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
           crossOrigin="anonymous"
         ></script>
-      </div>
+      </div> */}
     </ChakraProvider>
-  )
+  );
 }
