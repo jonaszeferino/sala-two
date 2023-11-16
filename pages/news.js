@@ -79,7 +79,7 @@ export default function Home() {
 
       <Navbar />
       <Center>
-        <Heading mt="200px">Notícias Externas da Dupa Grenal</Heading>
+        <Heading mt="200px">Notícias Externas da Dupla Grenal</Heading>
       </Center>
       <Box mt="20px" ml="250px" mr="250px" borderRadius="10px">
         {data.map((item, index) => (
