@@ -71,7 +71,7 @@ export default function PalpitesForm() {
     getClubs();
   };
 
-  //Get
+  //Get clubs
   const getClubs = async () => {
     setIsLoading(true);
     try {
