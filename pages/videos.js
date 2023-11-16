@@ -75,7 +75,7 @@ export default function Home() {
 
       <Navbar />
       <Center>
-        <Heading mt="200px">Videos com os Reacts da Dupa Grenal</Heading>
+        <Heading mt="200px">Videos com os Reacts da Dupla Grenal</Heading>
       </Center>
 
       <Box mt="20px" ml="250px" mb="250px" mr="250px" borderRadius="10px">
