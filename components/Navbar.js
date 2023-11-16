@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
   Box,
   Flex,
@@ -6,6 +5,7 @@ import {
   ChakraProvider,
   Image,
   Center,
+  Link,
 } from '@chakra-ui/react';
 import styles from '../styles/Navbar.module.css';
 
@@ -21,23 +21,31 @@ const Navbar = () => {
         zIndex="1000"
       >
         <Flex align="center" justify="center">
-          <Text color="white" px={4}>
-            Colunas
-          </Text>
-          <Text color="white" px={4}>
-            Notícias
-          </Text>
+          <Link href="/">
+            <Text color="white" px={4}>
+              Colunas
+            </Text>
+          </Link>
+          <Link href="/news">
+            <Text color="white" px={4}>
+              Notícias
+            </Text>
+          </Link>
           <Link href="/">
             <Box boxSize="100px">
               <Image src="/sala.png" alt="logo" borderRadius="full" />
             </Box>
           </Link>
-          <Text color="white" px={4}>
-            Vídeos
-          </Text>
-          <Text color="white" px={4}>
-            Palpites
-          </Text>
+          <Link href="/videos">
+            <Text color="white" px={4}>
+              Vídeos
+            </Text>
+          </Link>
+          <Link href="/tips">
+            <Text color="white" px={4}>
+              Palpites
+            </Text>
+          </Link>
         </Flex>
       </Box>
     </ChakraProvider>
