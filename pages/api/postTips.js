@@ -1,24 +1,23 @@
 import client from "../../mongoConnection";
 import moment from "moment-timezone";
 
-
 export default async function handler(req, res) {
+  console.log("Chamou!")
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
   }
 
-  const { club_name, logo_name } = req.body;
+  const { awayTip, homeTip, user } = req.body;
 
   let date = moment().tz("UTC-03:00").toDate();
-  const collection = client.db("sala").collection("clubs");
+  const collection = client.db("sala").collection("tips");
 
   try {
     const document = {
-      club_name: club_name,
-      logo_name: logo_name,
-      created_at: date,
-      
+      awayTip: awayTip,
+      homeTip: homeTip,
+      user: user,
     };
 
     const result = await collection.insertOne(document);

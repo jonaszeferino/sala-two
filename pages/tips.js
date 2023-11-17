@@ -20,8 +20,6 @@ import {
 import Navbar from '../components/Navbar';
 import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import SocialLinks from '../components/SocialLink';
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -57,6 +55,40 @@ export default function Home() {
     setIsLoading(true);
   }, []);
 
+  // Salvar as tips
+
+  const saveTips = async (index) => {
+    setIsLoading(true);
+    const user = 'jonas.zeferino@gmail.com';
+    const { homeTip, awayTip } = data[index];
+
+    try {
+      // Aqui você pode usar diretamente os valores do estado atualizado
+      const response = await fetch('/api/postTips', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          awayTip,
+          homeTip,
+          user,
+        }),
+      });
+
+      if (response.ok) {
+        const { id } = await response.json();
+        console.log('Palpite salvo com sucesso! ID:', id);
+      } else {
+        console.error('Erro ao salvar palpite:', response.status);
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao salvar palpite:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ChakraProvider>
       <Head>
@@ -64,28 +96,13 @@ export default function Home() {
         <meta name="description" content="Site do Sala de Secacao" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-
-        {/* Meta tags para Open Graph (Facebook) */}
-        <meta property="og:title" content="Sala de Secacao" />
-        <meta property="og:description" content="Site do Sala de Secacao" />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="URL_DA_IMAGEM_PARA_COMPARTILHAMENTO"
-        />
-        <meta property="og:url" content="URL_DA_PAGINA" />
-
-        {/* Meta tags para Twitter */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Sala de Secacao" />
-        <meta name="twitter:description" content="Site do Sala de Secacao" />
-        <meta name="twitter:image" content="URL_DA_IMAGEM_PARA_TWITTER" />
       </Head>
 
       <Navbar />
       <Center>
         <Heading mt="200px">Palpites Dupla Grenal</Heading>
       </Center>
+
       <Center>
         <Box borderRadius="10px">
           {isLoading ? (
@@ -112,7 +129,6 @@ export default function Home() {
                     textAlign={{ base: 'center', md: 'left' }}
                     mb={{ base: '4', md: '0' }}
                   >
-                    {' '}
                     <Image
                       objectFit="cover"
                       maxW={{ base: '100%', sm: '150px' }}
@@ -134,22 +150,28 @@ export default function Home() {
                   </Box>
 
                   <FormControl id="clubName" p="10px">
-                    <Input type="number" />
+                    <Input
+                      id={`homeTip_${index}`}
+                      type="number"
+                      value={item.homeTip}
+                    />
                   </FormControl>
 
                   <Center>
                     <Heading>X</Heading>
                   </Center>
-
                   <FormControl id="clubName" p="10px">
-                    <Input type="number" />
+                    <Input
+                      id={`awayTip_${index}`}
+                      type="number"
+                      value={item.awayTip}
+                    />
                   </FormControl>
 
                   <Box
                     textAlign={{ base: 'center', md: 'right' }}
                     ml={{ base: '0', md: '4' }}
                   >
-                    {' '}
                     <Image
                       objectFit="cover"
                       maxW={{ base: '100%', sm: '150px' }}
@@ -169,6 +191,12 @@ export default function Home() {
                       </CardBody>
                     </Stack>
                   </Box>
+                </Box>
+
+                <Box mt="4" textAlign="center">
+                  <Button onClick={() => saveTips(index)}>
+                    Salvar Palpites
+                  </Button>
                 </Box>
               </Card>
             ))

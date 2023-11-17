@@ -76,18 +76,19 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             style={{ fontSize: '50px', padding: '20px' }}
+            
           >
             <FaTiktok />
           </a>
         </div>
       </Box>
-      <div>
+      {/* <div>
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5165191224568168"
           crossOrigin="anonymous"
         ></script>
-      </div>
+      </div> */}
     </ChakraProvider>
   )
 }

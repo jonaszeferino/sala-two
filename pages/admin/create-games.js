@@ -14,6 +14,10 @@ import {
   Stack,
   Heading,
   Select,
+  Divider,
+  Card,
+  CardBody,
+  Image,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect } from 'react';
@@ -28,6 +32,37 @@ export default function PalpitesForm() {
   const [showCreateGames, setShowCreateGames] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
+  const [dataGame, setDataGame] = useState([]);
+
+  const getGames = async () => {
+    try {
+      const response = await fetch(`/api/getGames`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Dados do usuário:', userData);
+        setIsLoading(false);
+        setDataGame(userData);
+      } else {
+        if (response.status === 404) {
+          setIsLoading(false);
+        }
+        console.error('Erro ao buscar o usuário:', response.status);
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Chamou o useEffect');
+    getGames();
+    setIsLoading(true);
+  }, []);
 
   const handleHomeClubChange = (event) => {
     setHomeClub(event.target.value);
@@ -76,7 +111,7 @@ export default function PalpitesForm() {
 
   useEffect(() => {
     getClubs();
-  }, []);
+  }, [isSave]);
 
   const saveGames = () => {
     setIsSaving(true);
@@ -118,8 +153,8 @@ export default function PalpitesForm() {
       <Sidebar />
       {showCreateGames === true ? (
         <>
-          <Center mt="50px" mb="50px">
-            <Heading>Partidas</Heading>
+          <Center mt="60px" mb="20px">
+            <Heading>Criar Partidas</Heading>
           </Center>
 
           <Center ml="100px">
@@ -164,15 +199,13 @@ export default function PalpitesForm() {
                     onChange={handleChampioship}
                   />
                 </FormControl>
-
-                <FormControl id="switch">
-                  <Stack direction="row">
-                    <Switch colorScheme="teal" size="lg" />
-                  </Stack>
-                </FormControl>
               </HStack>
 
-              <Button isDisabled={isSaving} colorScheme="blue" onClick={saveGames}>
+              <Button
+                isDisabled={isSaving}
+                colorScheme="blue"
+                onClick={saveGames}
+              >
                 Salvar Partida
               </Button>
             </VStack>
@@ -184,11 +217,129 @@ export default function PalpitesForm() {
         </Center>
       )}
 
-      {isSaving === true ? <Text>Salvando...</Text>: null}
-      {isSave === true ? <Text>Salvo..</Text>: null}
-
-      <Center mt="150px">
+      {isSaving === true ? <Text>Salvando...</Text> : null}
+      {isSave === true ? <Text>Salvo..</Text> : null}
+      <br />
+      <br />
+      <Divider />
+      <Center mt="50px">
         <Heading>Partidas Salvas</Heading>
+      </Center>
+
+      <Center>
+        <Box borderRadius="10px">
+          {isLoading ? (
+            <Text>Carregando...</Text>
+          ) : (
+            dataGame.map((item, index) => (
+              <Card
+                key={index}
+                display="flex"
+                overflow="hidden"
+                variant="outline"
+                style={{ margin: '10px' }}
+                mt="120px"
+                width="600px"
+              >
+                <Box mt="20px">
+                  <Center>
+                    <Text>{item.date}</Text>
+                    <br />
+                  </Center>
+                </Box>
+
+                <Box mt="2px">
+                  <Center>
+                    <Text>{item.championship}</Text>
+                    <br />
+                  </Center>
+                </Box>
+                <Center>
+                  <Box>
+                    <FormControl id="switch">
+                      <Switch colorScheme="teal" size="lg" />
+                    </FormControl>
+                  </Box>
+                </Center>
+                <Box
+                  display="flex"
+                  flexDirection={{ base: 'column', md: 'row' }}
+                  justifyContent={{ base: 'center', md: 'space-between' }}
+                  alignItems="center"
+                  width="600px"
+                >
+                  <Box
+                    textAlign={{ base: 'center', md: 'left' }}
+                    mb={{ base: '4', md: '0' }}
+                  >
+                    <Image
+                      objectFit="cover"
+                      maxW={{ base: '100%', sm: '150px' }}
+                      boxSize="150px"
+                      borderRadius="10px"
+                      src={item.homeClubData}
+                      alt="Imagem do Time de Casa"
+                      loading="lazy"
+                      ml="25px"
+                      mt="25px"
+                    />
+                    <Stack>
+                      <CardBody>
+                        <Center>
+                          <Text>{item.home_club}</Text>
+                        </Center>
+                      </CardBody>
+                    </Stack>
+                  </Box>
+
+                  <FormControl id="clubName" p="10px">
+                    <Input
+                      id={`homeTip_${index}`}
+                      type="number"
+                      value={item.homeTip}
+                    />
+                  </FormControl>
+
+                  <Center>
+                    <Heading>X</Heading>
+                  </Center>
+
+                  <FormControl id="clubName" p="10px">
+                    <Input
+                      id={`awayTip_${index}`}
+                      type="number"
+                      value={item.awayTip}
+                    />
+                  </FormControl>
+
+                  <Box
+                    textAlign={{ base: 'center', md: 'right' }}
+                    ml={{ base: '0', md: '4' }}
+                  >
+                    <Image
+                      objectFit="cover"
+                      maxW={{ base: '100%', sm: '150px' }}
+                      boxSize="150px"
+                      borderRadius="10px"
+                      src={item.awayClubData}
+                      alt="Imagem do Time de Fora"
+                      loading="lazy"
+                      mr="25px"
+                      mt="25px"
+                    />
+                    <Stack>
+                      <CardBody>
+                        <Center>
+                          <Text>{item.away_club}</Text>
+                        </Center>
+                      </CardBody>
+                    </Stack>
+                  </Box>
+                </Box>
+              </Card>
+            ))
+          )}
+        </Box>
       </Center>
     </ChakraProvider>
   );

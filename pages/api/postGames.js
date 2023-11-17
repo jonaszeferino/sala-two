@@ -1,5 +1,6 @@
 import client from '../../mongoConnection';
 import moment from 'moment-timezone';
+import { v4 as uuidv4 } from 'uuid'; // Importa a função v4 do módulo uuid
 
 export default async function handler(req, res) {
   console.log('Chamou!');
@@ -20,6 +21,10 @@ export default async function handler(req, res) {
       date: date,
       championship: championship,
       created_date: createdDate,
+      game_id: uuidv4(),
+      final_result_away: null,
+      final_result_home: null,
+      is_active: 0
     };
     const result = await collection.insertOne(document);
 

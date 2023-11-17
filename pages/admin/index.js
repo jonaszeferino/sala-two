@@ -24,7 +24,6 @@ export default function Home() {
       </Head>
 
       <Flex>
-        <Image src="sala.png" flex="1" objectFit="cover" h="100vh" />
         <Divider orientation="vertical" height="100vh" />
 
         <Flex direction="column" align="center" justify="center" flex="1" p="8">

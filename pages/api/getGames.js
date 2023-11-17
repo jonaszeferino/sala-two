@@ -49,6 +49,11 @@ export default async function handler(req, res) {
             away_club: 1,
             homeClubData: '$homeClubData.logo_name',
             awayClubData: '$awayClubData.logo_name',
+            championship: 1,
+            final_result_away: 1,
+            final_result_home:1,
+            game_id: 1,
+
           }
         }
       ])
