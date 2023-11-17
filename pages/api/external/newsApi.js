@@ -36,7 +36,10 @@ const fetchNews = async (apiKey) => {
       from: calculateDateAgo(21),
       to: calculateDateAgo(0),
     };
-    return await newsapi.v2.everything(queryOptions);
+
+    const headers = { "X-No-Cache": true };
+
+    return await newsapi.v2.everything(queryOptions, headers);
   } catch (error) {
     throw new Error(`Erro na consulta à NewsAPI: ${error.message}`);
   }
