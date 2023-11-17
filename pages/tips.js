@@ -118,6 +118,20 @@ export default function Home() {
                 mt="120px"
                 width="600px"
               >
+                <Box mt="20px">
+                  <Center>
+                    <Text>{item.date}</Text>
+                    <br />
+                  </Center>
+                </Box>
+
+                <Box mt="2px">
+                  <Center>
+                    <Text>{item.championship}</Text>
+                    <br />
+                  </Center>
+                </Box>
+                <Center></Center>
                 <Box
                   display="flex"
                   flexDirection={{ base: 'column', md: 'row' }}
