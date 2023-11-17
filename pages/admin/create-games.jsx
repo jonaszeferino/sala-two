@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Head from 'next/head';
 import {
   ChakraProvider,
   Box,
@@ -13,28 +13,135 @@ import {
   Switch,
   Stack,
   Heading,
-} from "@chakra-ui/react";
-import Sidebar from "../../components/Sidebar";
-import { useState } from "react";
+  Select,
+  Divider,
+  Card,
+  CardBody,
+  Image,
+} from '@chakra-ui/react';
+import Sidebar from '../../components/Sidebar';
+import { useState, useEffect } from 'react';
 
 export default function PalpitesForm() {
-  const [homeScore, setHomeScore] = useState("");
-  const [awayScore, setAwayScore] = useState("");
+  const [homeClub, setHomeClub] = useState('');
+  const [awayClub, setAwayClub] = useState('');
+  const [clubs, setClubs] = useState([]);
+  const [date, setDate] = useState('');
+  const [championship, setChampionship] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCreateGames, setShowCreateGames] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSave, setIsSave] = useState(false);
+  const [dataGame, setDataGame] = useState([]);
 
-  const handleHomeScoreChange = (event) => {
-    setGremioScore(event.target.value);
+  const getGames = async () => {
+    try {
+      const response = await fetch(`/api/getGames`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Dados do usuário:', userData);
+        setIsLoading(false);
+        setDataGame(userData);
+      } else {
+        if (response.status === 404) {
+          setIsLoading(false);
+        }
+        console.error('Erro ao buscar o usuário:', response.status);
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+    }
   };
 
-  const handleAwayScoreChange = (event) => {
-    setCorinthiansScore(event.target.value);
+  useEffect(() => {
+    console.log('Chamou o useEffect');
+    getGames();
+    setIsLoading(true);
+  }, []);
+
+  const handleHomeClubChange = (event) => {
+    setHomeClub(event.target.value);
+  };
+
+  const handleAwayClubChange = (event) => {
+    setAwayClub(event.target.value);
+  };
+
+  const handleChampioship = (event) => {
+    setChampionship(event.target.value);
+  };
+
+  const handleDate = (event) => {
+    setDate(event.target.value);
   };
 
   const handleSubmit = () => {
-    // Aqui você pode enviar os palpites, fazer validações ou qualquer outra ação necessária
-    console.log(
-      `Palpite: Grêmio ${gremioScore} x ${corinthiansScore} Corinthians`
-    );
+    console.log(`Palpite: Casa ${homeClub} x ${awayClub} Fora`);
   };
+
+  const getClubs = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/getClubs`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Clubes retornados:', userData);
+        setClubs(userData);
+        setShowCreateGames(true);
+        console.log(showCreateGames);
+      } else {
+        if (response.status === 404) {
+          console.error('Erro ao buscar os clubes:', response.status);
+        }
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+    }
+  };
+
+  useEffect(() => {
+    getClubs();
+  }, [isSave]);
+
+  const saveGames = () => {
+    setIsSaving(true);
+    setIsSave(false);
+
+    const data = {
+      home_club: homeClub,
+      away_club: awayClub,
+      date: date,
+      championship: championship,
+    };
+
+    fetch('/api/postGames', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        console.log('Jogo Salo Com Sucesso!', response);
+
+        setIsSaving(false);
+        setIsSave(true);
+      })
+      .catch((error) => {
+        console.error('Erro ao salvar notícia:', error);
+      });
+  };
+
   return (
     <ChakraProvider>
       <Head>
@@ -43,69 +150,196 @@ export default function PalpitesForm() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Sidebar />
-  
+      {showCreateGames === true ? (
+        <>
+          <Center mt="60px" mb="20px">
+            <Heading>Criar Partidas</Heading>
+          </Center>
 
-      <Center mt="50px" mb="50px">
-        <Heading>Partidas</Heading>
+          <Center ml="100px">
+            <VStack spacing={4} align="stretch">
+              <HStack spacing={4}>
+                <FormControl id="homeClub">
+                  <FormLabel>Time em Casa</FormLabel>
+                  <Select value={homeClub} onChange={handleHomeClubChange}>
+                    {clubs.map((club) => (
+                      <option key={club._id} value={club.club_name}>
+                        {club.club_name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl id="awayClub">
+                  <FormLabel>Fora de Casa</FormLabel>
+                  <Select value={awayClub} onChange={handleAwayClubChange}>
+                    {clubs.map((club) => (
+                      <option key={club._id} value={club.club_name}>
+                        {club.club_name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl id="date">
+                  <FormLabel>Data e hora do Jogo</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    value={date}
+                    onChange={handleDate}
+                  />
+                </FormControl>
+
+                <FormControl id="championship">
+                  <FormLabel>Campeonato</FormLabel>
+                  <Input
+                    type="text"
+                    value={championship}
+                    onChange={handleChampioship}
+                  />
+                </FormControl>
+              </HStack>
+
+              <Button
+                isDisabled={isSaving}
+                colorScheme="blue"
+                onClick={saveGames}
+              >
+                Salvar Partida
+              </Button>
+            </VStack>
+          </Center>
+        </>
+      ) : (
+        <Center>
+          <Text>Aguarde, tela carregando </Text>
+        </Center>
+      )}
+
+      {isSaving === true ? <Text>Salvando...</Text> : null}
+      {isSave === true ? <Text>Salvo..</Text> : null}
+      <br />
+      <br />
+      <Divider />
+      <Center mt="50px">
+        <Heading>Partidas Salvas</Heading>
       </Center>
 
-      <ChakraProvider>
-        <Center ml="100px">
-          <VStack spacing={4} align="stretch">
-            <HStack spacing={4}>
-              <FormControl id="homeScore">
-                <FormLabel>Em casa</FormLabel>
-                <Input
-                  type="text"
-                  value={homeScore}
-                  onChange={handleHomeScoreChange}
-                />
-              </FormControl>
+      <Center>
+        <Box borderRadius="10px">
+          {isLoading ? (
+            <Text>Carregando...</Text>
+          ) : (
+            dataGame.map((item, index) => (
+              <Card
+                key={index}
+                display="flex"
+                overflow="hidden"
+                variant="outline"
+                style={{ margin: '10px' }}
+                mt="120px"
+                width="600px"
+              >
+                <Box mt="20px">
+                  <Center>
+                    <Text>{item.date}</Text>
+                    <br />
+                  </Center>
+                </Box>
 
-              <FormControl id="awayScore">
-                <FormLabel>Fora de Casa</FormLabel>
-                <Input
-                  type="text"
-                  value={awayScore}
-                  onChange={handleAwayScoreChange}
-                />
-              </FormControl>
+                <Box mt="2px">
+                  <Center>
+                    <Text>{item.championship}</Text>
+                    <br />
+                  </Center>
+                </Box>
+                <Center>
+                  <Box>
+                    <FormControl id="switch">
+                      <Switch colorScheme="teal" size="lg" />
+                    </FormControl>
+                  </Box>
+                </Center>
+                <Box
+                  display="flex"
+                  flexDirection={{ base: 'column', md: 'row' }}
+                  justifyContent={{ base: 'center', md: 'space-between' }}
+                  alignItems="center"
+                  width="600px"
+                >
+                  <Box
+                    textAlign={{ base: 'center', md: 'left' }}
+                    mb={{ base: '4', md: '0' }}
+                  >
+                    <Image
+                      objectFit="cover"
+                      maxW={{ base: '100%', sm: '150px' }}
+                      boxSize="150px"
+                      borderRadius="10px"
+                      src={item.homeClubData}
+                      alt="Imagem do Time de Casa"
+                      loading="lazy"
+                      ml="25px"
+                      mt="25px"
+                    />
+                    <Stack>
+                      <CardBody>
+                        <Center>
+                          <Text>{item.home_club}</Text>
+                        </Center>
+                      </CardBody>
+                    </Stack>
+                  </Box>
 
-              <FormControl id="corinthiansScore">
-                <FormLabel>Data e hora do Jogo</FormLabel>
-                <Input
-                  type="datetime-local"
-                  value={awayScore}
-                  onChange={handleAwayScoreChange}
-                />
-              </FormControl>
+                  <FormControl id="clubName" p="10px">
+                    <Input
+                      id={`homeTip_${index}`}
+                      type="number"
+                      value={item.homeTip}
+                    />
+                  </FormControl>
 
-              <FormControl id="corinthiansScore">
-                <FormLabel>Campeonato</FormLabel>
-                <Input
-                  type="text"
-                  value={awayScore}
-                  onChange={handleAwayScoreChange}
-                />
-              </FormControl>
-              <FormControl id="corinthiansScore">
-                <Stack direction="row">
-                  <Switch colorScheme="teal" size="lg" />
-                </Stack>
-              </FormControl>
-            </HStack>
+                  <Center>
+                    <Heading>X</Heading>
+                  </Center>
 
-            <Button colorScheme="blue" onClick={handleSubmit}>
-              Salvar Partida
-            </Button>
-          </VStack>
-        </Center>
-      </ChakraProvider>
+                  <FormControl id="clubName" p="10px">
+                    <Input
+                      id={`awayTip_${index}`}
+                      type="number"
+                      value={item.awayTip}
+                    />
+                  </FormControl>
 
-      <Center mt="150px">
-        <Heading>Partidas Salvas</Heading>
+                  <Box
+                    textAlign={{ base: 'center', md: 'right' }}
+                    ml={{ base: '0', md: '4' }}
+                  >
+                    <Image
+                      objectFit="cover"
+                      maxW={{ base: '100%', sm: '150px' }}
+                      boxSize="150px"
+                      borderRadius="10px"
+                      src={item.awayClubData}
+                      alt="Imagem do Time de Fora"
+                      loading="lazy"
+                      mr="25px"
+                      mt="25px"
+                    />
+                    <Stack>
+                      <CardBody>
+                        <Center>
+                          <Text>{item.away_club}</Text>
+                        </Center>
+                      </CardBody>
+                    </Stack>
+                  </Box>
+                </Box>
+              </Card>
+            ))
+          )}
+        </Box>
       </Center>
     </ChakraProvider>
   );

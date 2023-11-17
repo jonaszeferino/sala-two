@@ -18,23 +18,25 @@ import {
 } from "@chakra-ui/react";
 
 const App = () => {
-  const [content, setContent] = useState(""); 
+  const [content, setContent] = useState("");
   const [journalist, setJournalist] = useState("");
-  const [title, setTitle] = useState(""); 
+  const [title, setTitle] = useState("");
+  const [isLoading, setIsLoading] = useState("");
 
   const handleEditorChange = (content, editor) => {
-    setContent(content); 
+    setContent(content);
   };
 
-  const handleJournalistChange = (journalist) => {
-    setJournalist(journalist); 
+  const handleJournalistChange = (event) => {
+    setJournalist(event.target.value);
   };
 
-  const handleTitleChange = (title) => {
-    setTitle(title); 
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
   };
 
   const saveNews = () => {
+    setIsLoading(true);
     const data = {
       news: content,
       journalist_name: journalist,
@@ -50,9 +52,11 @@ const App = () => {
     })
       .then((response) => {
         console.log("Notícia salva com sucesso!", response);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Erro ao salvar notícia:", error);
+        setIsLoading(false);
       });
   };
 
@@ -81,18 +85,14 @@ const App = () => {
                 Promise.reject("See docs to implement AI Assistant")
               ),
           }}
-          initialValue="Comece a editar sua notícia, caso queira adicionar uma imagem, é preciso coloar o link da mesmo, imgur é uma boa dica "
+          initialValue="Comece a editar sua notícia, caso queira adicionar uma imagem, é preciso colocar o link da mesma, imgur é uma boa dica "
           onEditorChange={handleEditorChange}
         />
         <br />
         <ChakraProvider>
           <FormControl>
             <FormLabel>Título Para A Home</FormLabel>
-            <Input
-              type="text"
-              value={title}
-              onChange={handleTitleChange}
-            />
+            <Input type="text" value={title} onChange={handleTitleChange} />
           </FormControl>
           <br />
           <FormControl>
@@ -108,6 +108,7 @@ const App = () => {
             Salvar Notícia
           </Button>
         </ChakraProvider>
+        {isLoading ? <Text>Carregando</Text> : null}
       </div>
     </>
   );

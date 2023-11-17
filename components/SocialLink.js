@@ -3,7 +3,7 @@ import { FaTwitter, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 import { ChakraProvider, Box, Text, Center } from "@chakra-ui/react";
 
 
-const Footer = () => {
+const SocialLinks = () => {
  
   return (
     <footer className={styles.footer}>
@@ -52,7 +52,7 @@ const Footer = () => {
 }
 
 
-export default Footer;
+export default SocialLinks;
 
 
 

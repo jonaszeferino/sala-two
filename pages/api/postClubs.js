@@ -1,6 +1,7 @@
 import client from "../../mongoConnection";
 import moment from "moment-timezone";
 
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -17,6 +18,7 @@ export default async function handler(req, res) {
       club_name: club_name,
       logo_name: logo_name,
       created_at: date,
+      
     };
 
     const result = await collection.insertOne(document);

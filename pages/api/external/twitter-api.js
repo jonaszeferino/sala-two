@@ -1,6 +1,6 @@
 import axios from "axios";
 import { handleError } from "../../../utils/errorHandler";
-import { twitterConfig } from "./twitterConfig";
+import { twitterConfig } from "./twitter-config";
 
 export default async function getTweetsHandler() {
   const { basePath, bearerToken, username } = twitterConfig;

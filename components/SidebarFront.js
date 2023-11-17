@@ -6,7 +6,6 @@ import {
   Text,
   ChakraProvider,
   Image,
-  Center,
   Grid,
 } from "@chakra-ui/react";
 
@@ -30,12 +29,12 @@ const Sidebar = () => {
             <br/>
             <Link href="/admin/create-games">
               <Text color="white" py={2}>
-                Jogos
+                Criação de jogos
               </Text>
             </Link>
             <Link href="/admin/create-club">
               <Text color="white" py={2}>
-               Times
+                Criação de Times
               </Text>
             </Link>
             <Link href="/admin/create-news">
