@@ -1,0 +1,7 @@
+.fixedNavbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ajuste conforme necessário para empilhamento */
+    /* Adicione outros estilos desejados, como cor de fundo, sombra, etc. */
+  }

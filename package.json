@@ -1,0 +1,49 @@
+{
+  "name": "sala-two",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "studio": "sanity dev",
+    "studio-deploy": "sanity deploy"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@sanity/image-url": "^1.0.2",
+    "@sanity/vision": "^3.20.2",
+    "@tinymce/tinymce-react": "^4.3.0",
+    "axios": "^1.6.1",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.5",
+    "moment-timezone": "^0.5.43",
+    "momment": "^0.0.1",
+    "mongodb": "^6.3.0",
+    "newsapi": "^2.4.1",
+    "next": "^14.0.3",
+    "next-sanity": "^5.5.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.12.0",
+    "rxjs": "^7.8.1",
+    "sanity": "^3.20.2",
+    "styled-components": "^6.1.1",
+    "supabase": "^1.115.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.0.2",
+    "prettier": "^3.1.0"
+  }
+}
