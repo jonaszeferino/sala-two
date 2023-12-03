@@ -18,6 +18,8 @@ import {
 import Sidebar from '../../components/Sidebar';
 
 import { useState, useEffect } from 'react';
+import { supabase } from "../../utils/supabaseClientAdmin";
+
 
 export default function PalpitesForm() {
   const [clubName, setClubName] = useState('');
