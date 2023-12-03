@@ -18,7 +18,7 @@ import {
 import Sidebar from '../../components/Sidebar';
 
 import { useState, useEffect } from 'react';
-import { supabase } from "../../utils/supabaseClientAdmin";
+import LoggedUser from "../../components/LoggedUser";
 
 
 export default function PalpitesForm() {
@@ -35,31 +35,6 @@ export default function PalpitesForm() {
   
 
   //user verify
-  useEffect(() => {
-    let mounted = true;
-    async function getInitialSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (mounted) {
-        if (session) {
-          setSession(session);
-          setEmailInfo(session.user.email);
-        }
-        setIsLoading(false);
-      }
-    }
-    getInitialSession();
-    const { subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
-    return () => {
-      mounted = false;
-      subscription?.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     getClubs();
@@ -130,6 +105,9 @@ export default function PalpitesForm() {
     }
   };
 
+
+console.log(session)
+
   return (
     <ChakraProvider>
       <Head>
@@ -139,7 +117,10 @@ export default function PalpitesForm() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      
+
       <Sidebar />
+      <LoggedUser />
 
       <Center mt="100px">
         <Heading as="h1" size="2xl">

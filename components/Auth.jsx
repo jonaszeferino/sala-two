@@ -164,7 +164,8 @@ export default function Auth() {
           marginTop={5}
         >
           <Heading as="h1" size="xl" textAlign="center" mb={4}>
-            {isSignUp ? "Cadastre-se" : "Login"}
+            {/* {isSignUp ? "Cadastre-se" : "Login"} */}
+            Login
           </Heading>
           <FormControl>
             <FormLabel>Email</FormLabel>
@@ -197,13 +198,13 @@ export default function Auth() {
 
           <Link
             color="teal.500"
-            href="https://supabase-nextjs-gamma.vercel.app/send-email-password-reset"
+            href="https://localhost/send-email-password-reset"
           >
             Esqueci minha senha
           </Link>
 
           <Center>
-            {isSignUp && (
+            {/* {isSignUp && (
               <Button
                 mt={4}
                 colorScheme="teal"
@@ -212,7 +213,7 @@ export default function Auth() {
               >
                 Cadastre-Se
               </Button>
-            )}
+            )} */}
             {!isSignUp && (
               <Button
                 mt={4}
@@ -239,7 +240,7 @@ export default function Auth() {
 
           {/* Link para alternar entre Sign In e Sign Up */}
           <Divider my={4} />
-          <Center>
+          {/* <Center>
             <Button
               mt={4}
               colorScheme="blue"
@@ -249,15 +250,15 @@ export default function Auth() {
             >
               Login com Google
             </Button>
-          </Center>
+          </Center> */}
           <br />
-          <Center>
+          {/* <Center>
             <Link onClick={changeForm} cursor="pointer">
               {isSignUp
                 ? "Você já tem uma Conta? Faça o Login!"
                 : "Você é Novo? Cadastre-se!"}
             </Link>
-          </Center>
+          </Center> */}
         </Box>
       </Center>
     </ChakraProvider>
