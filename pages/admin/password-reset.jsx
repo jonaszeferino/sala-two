@@ -1,5 +1,5 @@
 import react, { useState, useEffect } from "react";
-import { supabase } from "../utils/supabaseClientAdmin";
+import { supabase } from "../../utils/supabaseClientAdmin";
 import {
   Box,
   Heading,
@@ -17,7 +17,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
-import LoggedUser from "../components/LoggedUser";
+import LoggedUser from "../../components/LoggedUser";
 import Head from "next/head";
 
 function PasswordReset() {

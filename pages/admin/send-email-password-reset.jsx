@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../utils/supabaseClientAdmin";
+import { supabase } from "../../utils/supabaseClientAdmin";
 import {
   Box,
   Heading,
