@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -12,13 +12,12 @@ import {
   useMediaQuery,
   IconButton,
   Center,
-} from "@chakra-ui/react";
-import { supabase } from "../utils/supabaseClientAdmin";
-
+} from '@chakra-ui/react';
+import { supabase } from '../utils/supabaseClientAdmin';
 
 const LoggedUser = () => {
-  const [session, setSession] = useState()
-  const [isLoading, setIsLoading] = useState()
+  const [session, setSession] = useState();
+  const [isLoading, setIsLoading] = useState();
 
   useEffect(() => {
     let mounted = true;
@@ -37,7 +36,7 @@ const LoggedUser = () => {
     const { subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-      }
+      },
     );
     return () => {
       mounted = false;
@@ -47,20 +46,22 @@ const LoggedUser = () => {
 
   return (
     <ChakraProvider>
-    {session ? (
-      <p>
-        Usuário: {session.user.email} <br />
-        <Button
-          onClick={() => supabase.auth.signOut()}
-          colorScheme="red"
-          size="sm"
-        >
-          Sair
-        </Button>
-      </p>
-    ) : null}
-    {/* Resto do seu código */}
-  </ChakraProvider>
+      {session ? (
+        <p>
+          Usuário: {session.user.email} <br />
+          <Center>
+            <Button
+              onClick={() => supabase.auth.signOut()}
+              colorScheme="red"
+              size="sm"
+            >
+              Sair
+            </Button>
+          </Center>
+        </p>
+      ) : null}
+      {/* Resto do seu código */}
+    </ChakraProvider>
   );
 };
 

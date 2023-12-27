@@ -16,10 +16,10 @@ import {
   Grid,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
-
 import { useState, useEffect } from 'react';
-import LoggedUser from "../../components/LoggedUser";
-
+import LoggedUser from '../../components/LoggedUser';
+import { supabase } from "../../utils/supabaseClientAdmin";
+import Auth from "../../components/Auth";
 
 export default function PalpitesForm() {
   const [clubName, setClubName] = useState('');
@@ -32,7 +32,6 @@ export default function PalpitesForm() {
   // auth
   const [session, setSession] = useState(null);
   const [emailInfo, setEmailInfo] = useState('');
-  
 
   //user verify
 
@@ -105,8 +104,30 @@ export default function PalpitesForm() {
     }
   };
 
-
-console.log(session)
+  // Session Verify
+  useEffect(() => {
+    let mounted = true;
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session) {
+          setSession(session);
+        }
+      }
+    }
+    getInitialSession();
+    const { subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
     <ChakraProvider>
@@ -117,97 +138,103 @@ console.log(session)
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      
+      {session ? (
+        <ChakraProvider>
+          <Sidebar />
+          <LoggedUser />
 
-      <Sidebar />
-      <LoggedUser />
+          <Center mt="100px">
+            <Heading as="h1" size="2xl">
+              Times
+            </Heading>
+          </Center>
+          <ChakraProvider>
+            <Center mt="50px">
+              {' '}
+              {/* Adicionando margem no topo */}
+              <VStack spacing={4} align="stretch">
+                <HStack spacing={4}>
+                  <FormControl id="clubName">
+                    <FormLabel>Nome do Time</FormLabel>
+                    <Input value={clubName} onChange={handleClubNameChange} />
+                  </FormControl>
 
-      <Center mt="100px">
-        <Heading as="h1" size="2xl">
-          Times
-        </Heading>
-      </Center>
-      <ChakraProvider>
-        <Center mt="50px">
-          {' '}
-          {/* Adicionando margem no topo */}
-          <VStack spacing={4} align="stretch">
-            <HStack spacing={4}>
-              <FormControl id="clubName">
-                <FormLabel>Nome do Time</FormLabel>
-                <Input value={clubName} onChange={handleClubNameChange} />
-              </FormControl>
+                  <FormControl id="logo">
+                    <FormLabel>Link da Imagem</FormLabel>
+                    <Input
+                      value={logo}
+                      type="text"
+                      onChange={handleLogoChange}
+                    />
+                  </FormControl>
+                </HStack>
 
-              <FormControl id="logo">
-                <FormLabel>Link da Imagem</FormLabel>
-                <Input value={logo} type="text" onChange={handleLogoChange} />
-              </FormControl>
-            </HStack>
-
-            <Button colorScheme="blue" onClick={handleSubmit}>
-              Salvar Time
-            </Button>
-          </VStack>
-        </Center>
-      </ChakraProvider>
-
-      <br />
-      <br />
-      <br />
-
-      <Divider />
-      <br />
-      <br />
-
-      <ChakraProvider>
-        <br />
-        <br />
-        <Grid
-          templateColumns={{
-            base: 'repeat(1, 1fr)',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(4, 1fr)',
-            xl: 'repeat(5, 1fr)',
-          }}
-          gap={6}
-          marginLeft="100px" // Margem à esquerda
-          marginRight="80px" // Margem à direita
-        >
-          {!isLoading ? (
-            clubs.map((club) => (
-              <Box
-                key={club._id}
-                borderWidth="1px"
-                borderRadius="lg"
-                p={4}
-                width="100%" // Ocupa toda a largura da coluna
-                textAlign="center"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                flexDirection="column"
-                marginLeft="50px" // Margem interna à esquerda
-                marginRight="10px" // Margem interna à direita
-              >
-                <Text fontWeight="bold">Time: {club.club_name}</Text>
-                <Box boxSize="150px" marginTop="10px">
-                  <Image
-                    src={club.logo_name}
-                    alt="Club Name"
-                    boxSize="100%"
-                    objectFit="cover"
-                  />
-                </Box>
-              </Box>
-            ))
-          ) : (
-            <Center mt="100px">
-              <Text>Loading...</Text>
+                <Button colorScheme="blue" onClick={handleSubmit}>
+                  Salvar Time
+                </Button>
+              </VStack>
             </Center>
-          )}
-        </Grid>
-      </ChakraProvider>
+          </ChakraProvider>
+
+          <br />
+          <br />
+          <br />
+
+          <Divider />
+          <br />
+          <br />
+
+          <ChakraProvider>
+            <br />
+            <br />
+            <Grid
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+                lg: 'repeat(4, 1fr)',
+                xl: 'repeat(5, 1fr)',
+              }}
+              gap={6}
+              marginLeft="100px" // Margem à esquerda
+              marginRight="80px" // Margem à direita
+            >
+              {!isLoading ? (
+                clubs.map((club) => (
+                  <Box
+                    key={club._id}
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    p={4}
+                    width="100%" // Ocupa toda a largura da coluna
+                    textAlign="center"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
+                    marginLeft="50px" // Margem interna à esquerda
+                    marginRight="10px" // Margem interna à direita
+                  >
+                    <Text fontWeight="bold">Time: {club.club_name}</Text>
+                    <Box boxSize="150px" marginTop="10px">
+                      <Image
+                        src={club.logo_name}
+                        alt="Club Name"
+                        boxSize="100%"
+                        objectFit="cover"
+                      />
+                    </Box>
+                  </Box>
+                ))
+              ) : (
+                <Center mt="100px">
+                  <Text>Loading...</Text>
+                </Center>
+              )}
+            </Grid>
+          </ChakraProvider>
+        </ChakraProvider>
+      ) :  <Auth /> }
     </ChakraProvider>
   );
 }

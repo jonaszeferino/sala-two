@@ -64,12 +64,11 @@ const translateNews = (newsFromApi) => {
     };
   });
 
-  
   const filteredNews = news.filter((article) => article.title !== '[Removed]');
   const gremioNews = filteredNews.filter((article) => article.team === 'Grêmio');
   const interNews = filteredNews.filter((article) => article.team === 'Inter');
-
-  const minLength = Math.min(gremioNews.length, interNews.length);
+  
+    const minLength = Math.min(gremioNews.length, interNews.length);
 
   const translatedNews = [];
 
