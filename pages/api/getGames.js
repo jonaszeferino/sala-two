@@ -53,6 +53,7 @@ export default async function handler(req, res) {
             final_result_away: 1,
             final_result_home: 1,
             game_id: 1,
+            round: 1,
           },
         },
       ])

@@ -10,14 +10,10 @@ import {
   Text,
   Center,
   HStack,
-  Switch,
-  Stack,
+Grid,
   Heading,
-  Select,
-  Divider,
-  Card,
-  CardBody,
-  Image,
+    Divider,
+    Image,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect, useCallback } from 'react';
@@ -59,6 +55,7 @@ export default function PalpitesForm() {
 
   useEffect(() => {
     setIsLoading(true);
+    getChampionships()
   }, []);
 
   const handleChampioship = (event) => {
@@ -158,6 +155,56 @@ export default function PalpitesForm() {
       <Center mt="50px">
         <Heading>Campeonatos Salvos</Heading>
       </Center>
+
+      <ChakraProvider>
+            <br />
+            <br />
+            <Grid
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+                lg: 'repeat(4, 1fr)',
+                xl: 'repeat(5, 1fr)',
+              }}
+              gap={6}
+              marginLeft="100px" // Margem à esquerda
+              marginRight="80px" // Margem à direita
+            >
+              {!isLoading ? (
+                dataGame.map((club) => (
+                  <Box
+                    key={club._id}
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    p={4}
+                    width="100%" // Ocupa toda a largura da coluna
+                    textAlign="center"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
+                    marginLeft="50px" // Margem interna à esquerda
+                    marginRight="10px" // Margem interna à direita
+                  >
+                    <Text fontWeight="bold">Campeonato {club.name}</Text>
+                    <Box boxSize="150px" marginTop="10px">
+                      <Image
+                        src={club.logo}
+                        alt="Club Name"
+                        boxSize="100%"
+                        objectFit="cover"
+                      />
+                    </Box>
+                  </Box>
+                ))
+              ) : (
+                <Center mt="100px">
+                  <Text>Loading...</Text>
+                </Center>
+              )}
+            </Grid>
+          </ChakraProvider>
 
       <Center></Center>
     </ChakraProvider>

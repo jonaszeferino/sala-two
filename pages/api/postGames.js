@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { home_club, away_club, date, championship } = req.body;
+  const { home_club, away_club, date, championship, round } = req.body;
 
   let createdDate = moment().tz('UTC-03:00').toDate();
   const collection = client.db('sala').collection('games');
@@ -24,7 +24,8 @@ export default async function handler(req, res) {
       game_id: uuidv4(),
       final_result_away: null,
       final_result_home: null,
-      is_active: 0
+      is_active: 1,
+      round: round
     };
     const result = await collection.insertOne(document);
 

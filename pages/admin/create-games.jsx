@@ -25,6 +25,7 @@ import { useState, useEffect, useCallback } from 'react';
 export default function PalpitesForm() {
   const [homeClub, setHomeClub] = useState('');
   const [awayClub, setAwayClub] = useState('');
+  const [round, setRound] = useState('');
   const [clubs, setClubs] = useState([]);
   const [date, setDate] = useState('');
   const [championship, setChampionship] = useState('');
@@ -59,7 +60,6 @@ export default function PalpitesForm() {
   };
 
   useEffect(() => {
-    console.log('Chamou o useEffect');
     getGames();
     setIsLoading(true);
   }, []);
@@ -74,6 +74,10 @@ export default function PalpitesForm() {
 
   const handleChampioship = (event) => {
     setChampionship(event.target.value);
+  };
+
+  const handleRoundChange = (event) => {
+    setRound(event.target.value);
   };
 
   const handleDate = (event) => {
@@ -117,6 +121,7 @@ export default function PalpitesForm() {
       away_club: awayClub,
       date: date,
       championship: championship,
+      round: round
     };
 
     fetch('/api/postGames', {
@@ -194,6 +199,16 @@ export default function PalpitesForm() {
                     onChange={handleChampioship}
                   />
                 </FormControl>
+
+
+                <FormControl id="round">
+                  <FormLabel>Rodada</FormLabel>
+                  <Input
+                    type="text"
+                    value={round}
+                    onChange={handleRoundChange}
+                  />
+                </FormControl>
               </HStack>
 
               <Button
@@ -239,6 +254,13 @@ export default function PalpitesForm() {
                 <Box mt="20px">
                   <Center>
                     <Text>{item.date}</Text>
+                    <br />
+                  </Center>
+                </Box>
+
+                <Box mt="20px">
+                  <Center>
+                    <Text>Rodada:{item.round}</Text>
                     <br />
                   </Center>
                 </Box>
