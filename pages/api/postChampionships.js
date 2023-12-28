@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { name, season, date } = req.body;
+  const { name, season, date, logo_image } = req.body;
 
   let createdDate = moment().tz('UTC-03:00').toDate();
   const collection = client.db('sala').collection('championships');
@@ -19,6 +19,7 @@ export default async function handler(req, res) {
       name: name,
       season: season,
       date: date,
+      logo: logo_image, 
       championship_id: uuidv4(),
       is_active: 1,
     };

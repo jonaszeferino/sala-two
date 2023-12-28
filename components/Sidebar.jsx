@@ -20,6 +20,11 @@ const Sidebar = () => {
               <Image src="/sala.png" alt="logo" borderRadius="full" />
             </Box>
             <br />
+            <Link href="/admin/create-championship">
+              <Text color="white" py={2}>
+                Campeonatos
+              </Text>
+            </Link>
             <Link href="/admin/create-games">
               <Text color="white" py={2}>
                 Jogos

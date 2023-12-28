@@ -22,6 +22,7 @@ export const Navbar = () => {
         <Link as={NextLink} href="/tips" color="white">
           Palpites
         </Link>
+        
       </Flex>
     </Box>
   );
