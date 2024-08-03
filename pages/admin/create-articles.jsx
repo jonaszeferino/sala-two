@@ -1,5 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import React, { useEffect, useState } from 'react';
+import {
+  EditorState,
+  convertToRaw,
+  RichUtils,
+} from 'draft-js';
+import Editor from '@draft-js-plugins/editor';
+import createToolbarPlugin, { Separator } from '@draft-js-plugins/static-toolbar';
+import {
+  ItalicButton,
+  BoldButton,
+  UnderlineButton,
+  HeadlineOneButton,
+  HeadlineTwoButton,
+  HeadlineThreeButton,
+} from '@draft-js-plugins/buttons';
+import '@draft-js-plugins/static-toolbar/lib/plugin.css';
+import 'draft-js/dist/Draft.css';
 import Sidebar from '../../components/Sidebar';
 import {
   ChakraProvider,
@@ -11,19 +27,21 @@ import {
   Center,
   Heading,
   Box,
-  Card,
   Flex,
   Tag,
   TagLabel,
   TagCloseButton,
   VStack,
   Select,
-  HStack,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 
+// Criando o plugin da barra de ferramentas
+const toolbarPlugin = createToolbarPlugin();
+const { Toolbar } = toolbarPlugin;
+
 const App = () => {
-  const [content, setContent] = useState('');
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [journalist, setJournalist] = useState('');
   const [imageLink, setImageLink] = useState('');
   const [title, setTitle] = useState('');
@@ -37,10 +55,22 @@ const App = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const handleEditorChange = (content) => {
-    setContent(content);
+  // Função de atualização do editor
+  const handleEditorChange = (state) => {
+    setEditorState(state);
   };
 
+  // Função de comando de tecla
+  const handleKeyCommand = (command, editorState) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      setEditorState(newState);
+      return 'handled';
+    }
+    return 'not-handled';
+  };
+
+  // Funções de manipulação de dados
   const handleJournalistChange = (event) => {
     setJournalist(event.target.value);
   };
@@ -54,11 +84,12 @@ const App = () => {
   };
 
   const Clean = () => {
-    setContent('');
+    setEditorState(EditorState.createEmpty());
     setJournalist('');
     setTitle('');
-    setIsLoading(false);
+    setImageLink('');
     setTagInput('');
+    setTags([]);
     setSelectedColor('blue');
     setIsSaving(false);
     setIsSave(false);
@@ -70,6 +101,7 @@ const App = () => {
     setIsSaving(true);
     setIsSave(false);
     setIsLoading(true);
+    const content = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     const data = {
       news: content,
       journalist_name: journalist,
@@ -78,7 +110,6 @@ const App = () => {
       tags: tags,
     };
 
-    console.log('TesteData', data);
     console.log('Dados a serem enviados:', JSON.stringify(data));
 
     fetch('/api/postNews', {
@@ -131,8 +162,6 @@ const App = () => {
     setIsLoading(true);
   }, []);
 
-  // tags:
-
   const availableColors = [
     'whiteAlpha',
     'blackAlpha',
@@ -173,7 +202,7 @@ const App = () => {
     const updatedTags = tags.filter((tag) => tag.label !== tagToRemove.label);
     setTags(updatedTags);
   };
-  // detelar as noticias salvas:
+
   const handleDeleteNews = async (news_id) => {
     setIsDeleted(false);
     setIsDeleting(true);
@@ -203,34 +232,7 @@ const App = () => {
     <>
       <Sidebar />
 
-      <div
-        style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
-      >
-        <Editor
-          apiKey="ccpaulbj9jkbgr7ftwb35htdbzziawivodom2f71ce6eb7mz"
-          init={{
-            plugins:
-              'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-            toolbar:
-              'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
-            mergetags_list: [
-              { value: 'First.Name', title: 'First Name' },
-              { value: 'Email', title: 'Email' },
-            ],
-            ai_request: (request, respondWith) =>
-              respondWith.string(() =>
-                Promise.reject('See docs to implement AI Assistant'),
-              ),
-          }}
-          initialValue="Comece a editar sua notícia/crônica. Caso queira adicionar uma imagem, é necessário inserir o link da mesma. O Imgur é uma boa opção. Dica: pegue uma Imagem Livre ou faça a citação do autor
-          Deixe a imagem com um width de 1200px, coloque em italico abaixo da imagem no final dela o autor ou fonte. Adicione as tags e escolha a cor vermelha pra tags relacionadas ao inter e azul para o grêmio, outras tags, coloque outras cores.
-          Outra questão, deixe o margem final e inicial do texto conforme a foto, ou seja, o texto nao pode passar o tamanho da imagem
-          Obs.: A notícia ou Crônica ficará no site com a formatação exata que estará aqui embaixo"
-          onEditorChange={handleEditorChange}
-        />
-        <br />
+      <div style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}>
         <ChakraProvider>
           <FormControl>
             <FormLabel>Título Para A Home</FormLabel>
@@ -239,34 +241,62 @@ const App = () => {
           <br />
           <FormControl>
             <FormLabel>Link da Imagem</FormLabel>
-            <Input
-              type="text"
-              value={imageLink}
-              onChange={handleImageLinkChange}
-            />
+            <Input type="text" value={imageLink} onChange={handleImageLinkChange} />
           </FormControl>
           <br />
-
           <FormControl>
             <FormLabel>Autor</FormLabel>
-            <Input
-              type="text"
-              value={journalist}
-              onChange={handleJournalistChange}
-            />
+            <Input type="text" value={journalist} onChange={handleJournalistChange} />
           </FormControl>
-          <br/>
+          <br />
+          <FormControl>
+            <FormLabel>Conteúdo da Notícia</FormLabel>
+            <Box border="1px" borderColor="gray.200" padding="4" borderRadius="md">
+              <Toolbar>
+                {(externalProps) => (
+                  <>
+                    <BoldButton {...externalProps} />
+                    <ItalicButton {...externalProps} />
+                    <UnderlineButton {...externalProps} />
+                    <Separator {...externalProps} />
+                    <HeadlineOneButton {...externalProps} />
+                    <HeadlineTwoButton {...externalProps} />
+                    <HeadlineThreeButton {...externalProps} />
+                  </>
+                )}
+              </Toolbar>
 
-          <VStack spacing={5}>
-            <Flex p="5px" alignItems="center" justifyContent="flex-start">
-              <Input
-                value={tagInput}
-                onChange={handleTagInputChange}
-                placeholder="Digite uma tag"
+              <Editor
+                editorState={editorState}
+                onChange={handleEditorChange}
+                handleKeyCommand={handleKeyCommand}
+                plugins={[toolbarPlugin]} // Ajuste aqui
               />
+            </Box>
+          </FormControl>
+          <br />
+          <VStack spacing={5}>
+            <Flex p="5px" alignItems="center">
+              <FormControl>
+                <FormLabel>Tags</FormLabel>
+                <Input
+                  type="text"
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+              </FormControl>
               <Select
+                placeholder="Select color"
                 value={selectedColor}
                 onChange={(e) => handleColorChange(e.target.value)}
+                width="150px"
+                ml="2"
               >
                 {availableColors.map((color) => (
                   <option key={color} value={color}>
@@ -274,115 +304,42 @@ const App = () => {
                   </option>
                 ))}
               </Select>
-
-              <Tag
-                ml={5}
-                p={2}
-                colorScheme={selectedColor}
-                variant="solid"
-                size="lg"
+              <Button
+                colorScheme="teal"
+                ml="2"
                 onClick={handleAddTag}
-                style={{
-                  height: '30px',
-                  width: '200px',
-                }}
               >
-                Adicionar
+                Adicionar Tag
+              </Button>
+            </Flex>
+            {tags.map((tag) => (
+              <Tag key={tag.label} colorScheme={tag.color}>
+                <TagLabel>{tag.label}</TagLabel>
+                <TagCloseButton onClick={() => handleRemoveTag(tag)} />
               </Tag>
-            </Flex>
-
-            <Flex>
-              {tags.map((tag, index) => (
-                <Tag
-                  key={index}
-                  mr={2}
-                  mb={2}
-                  colorScheme={tag.color}
-                  variant="solid"
-                >
-                  <TagLabel>{tag.label}</TagLabel>
-                  <TagCloseButton onClick={() => handleRemoveTag(tag)} />
-                </Tag>
-              ))}
-            </Flex>
+            ))}
           </VStack>
-
-          <Button colorScheme="blue" onClick={saveNews} isDisabled={isSaving}>
-            Salvar Notícia
+          <br />
+          <Button
+            colorScheme="blue"
+            onClick={saveNews}
+            isLoading={isSaving}
+            loadingText="Salvando"
+          >
+            Salvar
           </Button>
-
-          {isSave === true ? (
-            <Button colorScheme="blue" onClick={Clean}>
-              Nova Notícia{' '}
-            </Button>
-          ) : null}
-
-          {isSaving == true ? 'Salvando' : null}
-          {isSave == true ? 'Salvo' : null}
+          <Button
+            colorScheme="red"
+            ml="2"
+            onClick={() => Clean()}
+          >
+            Limpar
+          </Button>
+          {isSave && <Text color="green.500">Notícia salva com sucesso!</Text>}
+          {isLoading && <Text color="blue.500">Carregando...</Text>}
+          {isDeleting && <Text color="red.500">Deletando...</Text>}
+          {isDeleted && <Text color="red.500">Notícia excluída com sucesso!</Text>}
         </ChakraProvider>
-
-        {isLoading ? <Text>Carregando</Text> : null}
-
-        <Center mt="50px">
-          <Heading>Notícias / Cronicas Salvas</Heading>
-        </Center>
-
-        <Center>
-          <Box mt="100px" mb="50px">
-            {isLoading ? (
-              <Text>Carregando...</Text>
-            ) : (
-              dataNews.map((item, index) => (
-                <Box key={index} bg="gray.250" p="10px">
-                  <Center>
-                    <Heading bg="gray.250">{item.title}</Heading>
-                  </Center>
-                  <Flex justifyContent="space-between" alignItems="center">
-                    <Text ml="0px">{item.jornalist_name}</Text>
-                    <Text mr="0px">
-                      {moment(item.created_at)
-                        .tz('America/Sao_Paulo')
-                        .format('DD/MM/YYYY HH:mm:ss')}
-                    </Text>
-                  </Flex>
-                  <br />
-                  <Center>
-                    <Box bg="gray.200" p={4}>
-                      <Text dangerouslySetInnerHTML={{ __html: item.news }} />
-                    </Box>
-                  </Center>
-                  <br />
-                  <br />
-                  <HStack spacing={2}>
-                    {item.tags &&
-                      item.tags.map((tag, tagIndex) => (
-                        <Tag
-                          key={tagIndex}
-                          variant="solid"
-                          colorScheme={tag.color.toLowerCase()}
-                        >
-                          {tag.label}
-                        </Tag>
-                      ))}
-                  </HStack>
-                  <Center>
-                    <Box bg="gray.200" p={4}>
-                      <Text>news_Id: {item.news_id}</Text>
-                    </Box>
-                  </Center>
-                  <Button
-                    colorScheme="red"
-                    onClick={() => handleDeleteNews(item.news_id)}
-                  >
-                    Excluir
-                  </Button>
-                  <Text>{isDeleted === true ? 'Deletado' : null}</Text>
-                  <Text>{isDeleting === true ? 'Deletando' : null}</Text>
-                </Box>
-              ))
-            )}
-          </Box>
-        </Center>
       </div>
     </>
   );
