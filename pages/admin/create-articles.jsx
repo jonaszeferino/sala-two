@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  EditorState,
-  convertToRaw,
-  RichUtils,
-} from 'draft-js';
+import { EditorState, convertToRaw, RichUtils } from 'draft-js';
 import Editor from '@draft-js-plugins/editor';
-import createToolbarPlugin, { Separator } from '@draft-js-plugins/static-toolbar';
+import createToolbarPlugin, {
+  Separator,
+} from '@draft-js-plugins/static-toolbar';
 import {
   ItalicButton,
   BoldButton,
@@ -55,12 +53,12 @@ const App = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  // Função de atualização do editor
+  
   const handleEditorChange = (state) => {
+    console.log('Editor state changed:', state);
     setEditorState(state);
   };
 
-  // Função de comando de tecla
   const handleKeyCommand = (command, editorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
@@ -101,18 +99,24 @@ const App = () => {
     setIsSaving(true);
     setIsSave(false);
     setIsLoading(true);
-    const content = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+
+    const content = JSON.stringify(
+      convertToRaw(editorState.getCurrentContent()),
+    );
     const data = {
-      news: content,
-      journalist_name: journalist,
+      article_title: title,
+      reporter_name: journalist,
       image_link: imageLink,
-      title: title,
-      tags: tags,
+      article_main: content,
+      article_tags: tags.map((tag) => tag.label).join(', '), // Converte tags para uma string separada por vírgulas
+      is_visible: false, // Adicione esta linha se você deseja que o artigo esteja sempre visível
+      publicated_date: moment().format('YYYY-MM-DD'), // Data de publicação atual
     };
 
     console.log('Dados a serem enviados:', JSON.stringify(data));
 
-    fetch('/api/postNews', {
+    fetch('/api/articles', {
+      // Atualize o endpoint para '/api/articles'
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -120,10 +124,16 @@ const App = () => {
       body: JSON.stringify(data),
     })
       .then((response) => {
-        console.log('Notícia salva com sucesso!', response);
-        setIsLoading(false);
-        setIsSave(true);
-        setIsSaving(false);
+        if (response.ok) {
+          console.log('Notícia salva com sucesso!', response);
+          setIsLoading(false);
+          setIsSave(true);
+          setIsSaving(false);
+        } else {
+          console.error('Erro ao salvar notícia:', response.status);
+          setIsLoading(false);
+          setIsSaving(false);
+        }
       })
       .catch((error) => {
         console.error('Erro ao salvar notícia:', error);
@@ -232,7 +242,9 @@ const App = () => {
     <>
       <Sidebar />
 
-      <div style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}>
+      <div
+        style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
+      >
         <ChakraProvider>
           <FormControl>
             <FormLabel>Título Para A Home</FormLabel>
@@ -241,17 +253,30 @@ const App = () => {
           <br />
           <FormControl>
             <FormLabel>Link da Imagem</FormLabel>
-            <Input type="text" value={imageLink} onChange={handleImageLinkChange} />
+            <Input
+              type="text"
+              value={imageLink}
+              onChange={handleImageLinkChange}
+            />
           </FormControl>
           <br />
           <FormControl>
             <FormLabel>Autor</FormLabel>
-            <Input type="text" value={journalist} onChange={handleJournalistChange} />
+            <Input
+              type="text"
+              value={journalist}
+              onChange={handleJournalistChange}
+            />
           </FormControl>
           <br />
           <FormControl>
             <FormLabel>Conteúdo da Notícia</FormLabel>
-            <Box border="1px" borderColor="gray.200" padding="4" borderRadius="md">
+            <Box
+              border="1px"
+              borderColor="gray.200"
+              padding="4"
+              borderRadius="md"
+            >
               <Toolbar>
                 {(externalProps) => (
                   <>
@@ -267,10 +292,11 @@ const App = () => {
               </Toolbar>
 
               <Editor
+                key={editorState.getCurrentContent().getLastCreatedEntityKey()}
                 editorState={editorState}
                 onChange={handleEditorChange}
                 handleKeyCommand={handleKeyCommand}
-                plugins={[toolbarPlugin]} // Ajuste aqui
+                plugins={[toolbarPlugin]}
               />
             </Box>
           </FormControl>
@@ -304,11 +330,7 @@ const App = () => {
                   </option>
                 ))}
               </Select>
-              <Button
-                colorScheme="teal"
-                ml="2"
-                onClick={handleAddTag}
-              >
+              <Button colorScheme="teal" ml="2" onClick={handleAddTag}>
                 Adicionar Tag
               </Button>
             </Flex>
@@ -328,17 +350,15 @@ const App = () => {
           >
             Salvar
           </Button>
-          <Button
-            colorScheme="red"
-            ml="2"
-            onClick={() => Clean()}
-          >
+          <Button colorScheme="red" ml="2" onClick={() => Clean()}>
             Limpar
           </Button>
           {isSave && <Text color="green.500">Notícia salva com sucesso!</Text>}
           {isLoading && <Text color="blue.500">Carregando...</Text>}
           {isDeleting && <Text color="red.500">Deletando...</Text>}
-          {isDeleted && <Text color="red.500">Notícia excluída com sucesso!</Text>}
+          {isDeleted && (
+            <Text color="red.500">Notícia excluída com sucesso!</Text>
+          )}
         </ChakraProvider>
       </div>
     </>
