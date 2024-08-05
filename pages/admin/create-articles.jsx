@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { EditorState, convertToRaw, RichUtils } from 'draft-js';
-import Editor from '@draft-js-plugins/editor';
-import createToolbarPlugin, {
-  Separator,
-} from '@draft-js-plugins/static-toolbar';
-import {
-  ItalicButton,
-  BoldButton,
-  UnderlineButton,
-  HeadlineOneButton,
-  HeadlineTwoButton,
-  HeadlineThreeButton,
-} from '@draft-js-plugins/buttons';
-import '@draft-js-plugins/static-toolbar/lib/plugin.css';
-import 'draft-js/dist/Draft.css';
+import dynamic from 'next/dynamic';
+import { EditorState, convertToRaw } from 'draft-js';
+import 'quill/dist/quill.snow.css';
 import Sidebar from '../../components/Sidebar';
 import {
   ChakraProvider,
@@ -22,21 +10,17 @@ import {
   FormLabel,
   Input,
   Text,
-  Center,
   Heading,
   Box,
   Flex,
   Tag,
   TagLabel,
   TagCloseButton,
-  VStack,
   Select,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 
-// Criando o plugin da barra de ferramentas
-const toolbarPlugin = createToolbarPlugin();
-const { Toolbar } = toolbarPlugin;
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const App = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -52,23 +36,12 @@ const App = () => {
   const [isSave, setIsSave] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [editorHtml, setEditorHtml] = useState('');
 
-  
-  const handleEditorChange = (state) => {
-    console.log('Editor state changed:', state);
-    setEditorState(state);
+  const handleEditorChange = (html) => {
+    setEditorHtml(html);
   };
 
-  const handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
-    if (newState) {
-      setEditorState(newState);
-      return 'handled';
-    }
-    return 'not-handled';
-  };
-
-  // Funções de manipulação de dados
   const handleJournalistChange = (event) => {
     setJournalist(event.target.value);
   };
@@ -99,52 +72,48 @@ const App = () => {
     setIsSaving(true);
     setIsSave(false);
     setIsLoading(true);
-
-    const content = JSON.stringify(
-      convertToRaw(editorState.getCurrentContent()),
-    );
+  
     const data = {
       article_title: title,
       reporter_name: journalist,
       image_link: imageLink,
-      article_main: content,
-      article_tags: tags.map((tag) => tag.label).join(', '), // Converte tags para uma string separada por vírgulas
-      is_visible: false, // Adicione esta linha se você deseja que o artigo esteja sempre visível
-      publicated_date: moment().format('YYYY-MM-DD'), // Data de publicação atual
+      article_main: editorHtml, 
+      article_tags: tags.map((tag) => tag.label).join(', '),
+      is_visible: false,
+      publicated_date: moment().format('YYYY-MM-DD'),
     };
-
-    console.log('Dados a serem enviados:', JSON.stringify(data));
-
+  
+    console.log('Dados a serem enviados:', data);
+  
     fetch('/api/articles', {
-      // Atualize o endpoint para '/api/articles'
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Notícia salva com sucesso!', response);
-          setIsLoading(false);
-          setIsSave(true);
-          setIsSaving(false);
-        } else {
-          console.error('Erro ao salvar notícia:', response.status);
-          setIsLoading(false);
-          setIsSaving(false);
-        }
-      })
-      .catch((error) => {
-        console.error('Erro ao salvar notícia:', error);
-        setIsLoading(false);
-        setIsSaving(false);
-      });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(json => {
+      console.log('Success:', json);
+      setIsLoading(false);
+      setIsSave(true);
+      setIsSaving(false);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      setIsLoading(false);
+      setIsSaving(false);
+    });
   };
-
+  
   const getNews = async () => {
     try {
-      const response = await fetch(`/api/getNews`, {
+      const response = await fetch(`/api/articles`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -152,14 +121,14 @@ const App = () => {
       });
       if (response.ok) {
         const dataRecive = await response.json();
-        console.log('Dados do usuário:', dataRecive);
+        console.log('Dados recebidos:', dataRecive);
         setIsLoading(false);
         setDataNews(dataRecive);
       } else {
         if (response.status === 404) {
           setIsLoading(false);
         }
-        console.error('Erro ao buscar o usuário:', response.status);
+        console.error('Erro ao buscar notícias:', response.status);
       }
     } catch (error) {
       console.error('Erro inesperado:', error);
@@ -167,7 +136,6 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log('Chamou o useEffect');
     getNews();
     setIsLoading(true);
   }, []);
@@ -202,7 +170,7 @@ const App = () => {
   };
 
   const handleAddTag = () => {
-    if (tagInput.trim() !== '' && !tags.includes(tagInput)) {
+    if (tagInput.trim() !== '' && !tags.some((tag) => tag.label === tagInput)) {
       setTags([...tags, { label: tagInput, color: selectedColor }]);
       setTagInput('');
     }
@@ -216,9 +184,8 @@ const App = () => {
   const handleDeleteNews = async (news_id) => {
     setIsDeleted(false);
     setIsDeleting(true);
-    console.log('Chamou a Deleção');
     try {
-      const response = await fetch('/api/deleteNews', {
+      const response = await fetch('/api/articles', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -277,52 +244,42 @@ const App = () => {
               padding="4"
               borderRadius="md"
             >
-              <Toolbar>
-                {(externalProps) => (
-                  <>
-                    <BoldButton {...externalProps} />
-                    <ItalicButton {...externalProps} />
-                    <UnderlineButton {...externalProps} />
-                    <Separator {...externalProps} />
-                    <HeadlineOneButton {...externalProps} />
-                    <HeadlineTwoButton {...externalProps} />
-                    <HeadlineThreeButton {...externalProps} />
-                  </>
-                )}
-              </Toolbar>
-
-              <Editor
-                key={editorState.getCurrentContent().getLastCreatedEntityKey()}
-                editorState={editorState}
-                onChange={handleEditorChange}
-                handleKeyCommand={handleKeyCommand}
-                plugins={[toolbarPlugin]}
-              />
+              <ReactQuill theme="snow" value={editorHtml} onChange={handleEditorChange} />
             </Box>
           </FormControl>
+
           <br />
-          <VStack spacing={5}>
-            <Flex p="5px" alignItems="center">
-              <FormControl>
-                <FormLabel>Tags</FormLabel>
-                <Input
-                  type="text"
-                  value={tagInput}
-                  onChange={handleTagInputChange}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                />
-              </FormControl>
+          <FormControl>
+            <FormLabel>Tags</FormLabel>
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {tags.map((tag) => (
+                <Tag
+                  key={tag.label}
+                  colorScheme={tag.color}
+                  borderRadius="full"
+                >
+                  <TagLabel>{tag.label}</TagLabel>
+                  <TagCloseButton onClick={() => handleRemoveTag(tag)} />
+                </Tag>
+              ))}
+            </Box>
+            <Box display="flex" mt={2} alignItems="center">
+              <Input
+                placeholder="Nova tag"
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddTag();
+                  }
+                }}
+              />
               <Select
-                placeholder="Select color"
                 value={selectedColor}
                 onChange={(e) => handleColorChange(e.target.value)}
+                ml={2}
                 width="150px"
-                ml="2"
               >
                 {availableColors.map((color) => (
                   <option key={color} value={color}>
@@ -330,35 +287,71 @@ const App = () => {
                   </option>
                 ))}
               </Select>
-              <Button colorScheme="teal" ml="2" onClick={handleAddTag}>
+              <Button onClick={handleAddTag} ml={2}>
                 Adicionar Tag
               </Button>
-            </Flex>
-            {tags.map((tag) => (
-              <Tag key={tag.label} colorScheme={tag.color}>
-                <TagLabel>{tag.label}</TagLabel>
-                <TagCloseButton onClick={() => handleRemoveTag(tag)} />
-              </Tag>
-            ))}
-          </VStack>
-          <br />
-          <Button
-            colorScheme="blue"
-            onClick={saveNews}
-            isLoading={isSaving}
-            loadingText="Salvando"
-          >
-            Salvar
-          </Button>
-          <Button colorScheme="red" ml="2" onClick={() => Clean()}>
-            Limpar
-          </Button>
-          {isSave && <Text color="green.500">Notícia salva com sucesso!</Text>}
-          {isLoading && <Text color="blue.500">Carregando...</Text>}
-          {isDeleting && <Text color="red.500">Deletando...</Text>}
-          {isDeleted && (
-            <Text color="red.500">Notícia excluída com sucesso!</Text>
-          )}
+            </Box>
+          </FormControl>
+
+          <Flex mt={4} justify="center">
+            <Button
+              colorScheme="blue"
+              onClick={saveNews}
+              isLoading={isSaving}
+              loadingText="Salvando..."
+              mr={2}
+            >
+              Salvar Notícia
+            </Button>
+            <Button
+              colorScheme="red"
+              onClick={() => Clean()}
+              isLoading={isLoading}
+              loadingText="Limpando..."
+            >
+              Limpar
+            </Button>
+          </Flex>
+
+          {isSave && <Text mt={4} color="green.500">Notícia salva com sucesso!</Text>}
+          {isDeleted && <Text mt={4} color="red.500">Notícia excluída com sucesso!</Text>}
+          {isLoading && <Text mt={4}>Carregando...</Text>}
+
+          <Heading mt={8} as="h3" size="lg">Notícias Cadastradas</Heading>
+          {dataNews.map((news) => (
+            <Box
+              key={news.id}
+              p={4}
+              borderWidth="1px"
+              borderRadius="md"
+              mb={4}
+              shadow="sm"
+            >
+              <Heading size="md">{news.article_title}</Heading>
+              <Text mt={2}>Por: {news.reporter_name}</Text>
+              <Text mt={2} mb={2}>Data: {moment(news.publicated_date).format('DD/MM/YYYY')}</Text>
+              <Box
+                as="img"
+                src={news.image_link}
+                alt={news.article_title}
+                borderRadius="md"
+                boxSize="300px"
+                objectFit="cover"
+                mb={2}
+              />
+              <Text mt={2} dangerouslySetInnerHTML={{ __html: news.article_main }} />
+              <Flex mt={2} justify="space-between">
+                <Button
+                  colorScheme="blue"
+                  onClick={() => handleDeleteNews(news.id)}
+                  isLoading={isDeleting}
+                  loadingText="Excluindo..."
+                >
+                  Excluir
+                </Button>
+              </Flex>
+            </Box>
+          ))}
         </ChakraProvider>
       </div>
     </>

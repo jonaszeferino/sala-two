@@ -1,4 +1,3 @@
-
 import pool from '../../utils/db';
 
 export default async function handler(req, res) {
@@ -131,7 +130,7 @@ async function handleUpdate(req, res) {
 }
 
 async function handleDelete(req, res) {
-  const { id } = req.body;
+  const { news_id } = req.body;
 
   try {
     const client = await pool.connect();
@@ -143,7 +142,7 @@ async function handleDelete(req, res) {
         WHERE id = $1
       `;
 
-      await client.query(queryText, [id]);
+      await client.query(queryText, [news_id]);
 
       await client.query('COMMIT');
 
