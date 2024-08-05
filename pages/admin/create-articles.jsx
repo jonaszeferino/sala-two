@@ -276,12 +276,14 @@ const App = () => {
           <FormControl>
             <FormLabel>Conteúdo da Notícia</FormLabel>
             <Box
+              
               border="1px"
               borderColor="gray.200"
               padding="4"
               borderRadius="md"
             >
               <ReactQuill
+              
                 theme="snow"
                 value={editorHtml}
                 onChange={handleEditorChange}
@@ -395,10 +397,18 @@ const App = () => {
                   mb={2}
                 />
               </Center>
-              <Text maxWidth={1200}
-                mt={2}
-                dangerouslySetInnerHTML={{ __html: news.article_main }}
-              />
+              <Center>
+                <Text
+                  maxWidth={1200}
+                  mt={2}
+                  dangerouslySetInnerHTML={{ __html: news.article_main }}
+                  sx={{ textAlign: 'justify' }}
+
+                />
+              </Center>
+              <br/>
+              <br/>
+
               <Center>
                 {(Array.isArray(news.article_tags) &&
                   news.article_tags.length > 0 &&

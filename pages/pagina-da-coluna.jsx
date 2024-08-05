@@ -94,6 +94,7 @@ const App = () => {
               <Text maxWidth={1200}
                 mt={2}
                 dangerouslySetInnerHTML={{ __html: news.article_main }}
+                sx={{ textAlign: 'justify' }}
               />
               </Center>
               <br/>
