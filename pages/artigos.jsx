@@ -1,8 +1,6 @@
 import {
   Flex,
-  Box,
   Text,
-  Center,
   Heading,
   Card,
   CardFooter,

@@ -17,10 +17,11 @@ async function handleGet(req, res) {
   try {
     const client = await pool.connect();
     try {
-    
+      
       const currentBrazilTime = moment().tz('America/Sao_Paulo').format('YYYY-MM-DD HH:mm:ss');
       const currentUTC = moment.utc(currentBrazilTime).format('YYYY-MM-DD HH:mm:ss');
 
+      
       let queryText = 'SELECT * FROM articles WHERE publicated_date > $1 AND is_visible = true';
       const queryValues = [currentUTC];
 
