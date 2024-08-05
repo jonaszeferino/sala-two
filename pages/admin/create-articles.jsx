@@ -18,14 +18,13 @@ import {
   TagCloseButton,
   Select,
   useToast,
-  Center
+  Center,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const App = () => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [journalist, setJournalist] = useState('');
   const [imageLink, setImageLink] = useState('');
   const [title, setTitle] = useState('');
@@ -39,7 +38,7 @@ const App = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [editorHtml, setEditorHtml] = useState('');
-  
+
   const toast = useToast();
 
   const handleEditorChange = (html) => {
@@ -59,7 +58,6 @@ const App = () => {
   };
 
   const Clean = () => {
-    setEditorState(EditorState.createEmpty());
     setJournalist('');
     setTitle('');
     setImageLink('');
@@ -82,7 +80,7 @@ const App = () => {
       reporter_name: journalist,
       image_link: imageLink,
       article_main: editorHtml,
-      article_tags: tags.map((tag) => tag.label).join(', '),
+      article_tags: JSON.stringify(tags),
       is_visible: false,
       publicated_date: moment().format('YYYY-MM-DD'),
     };
@@ -94,37 +92,37 @@ const App = () => {
       },
       body: JSON.stringify(data),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(json => {
-      console.log('Success:', json);
-      setIsLoading(false);
-      setIsSave(true);
-      setIsSaving(false);
-      toast({
-        title: 'Notícia salva.',
-        description: 'A notícia foi salva com sucesso.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((json) => {
+        console.log('Success:', json);
+        setIsLoading(false);
+        setIsSave(true);
+        setIsSaving(false);
+        toast({
+          title: 'Notícia salva.',
+          description: 'A notícia foi salva com sucesso.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setIsLoading(false);
+        setIsSaving(false);
+        toast({
+          title: 'Erro ao salvar.',
+          description: 'Ocorreu um erro ao salvar a notícia.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       });
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      setIsLoading(false);
-      setIsSaving(false);
-      toast({
-        title: 'Erro ao salvar.',
-        description: 'Ocorreu um erro ao salvar a notícia.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    });
   };
 
   const getNews = async () => {
@@ -283,10 +281,13 @@ const App = () => {
               padding="4"
               borderRadius="md"
             >
-              <ReactQuill theme="snow" value={editorHtml} onChange={handleEditorChange} />
+              <ReactQuill
+                theme="snow"
+                value={editorHtml}
+                onChange={handleEditorChange}
+              />
             </Box>
           </FormControl>
-
           <br />
           <FormControl>
             <FormLabel>Tags</FormLabel>
@@ -331,7 +332,6 @@ const App = () => {
               </Button>
             </Box>
           </FormControl>
-
           <Flex mt={4} justify="center">
             <Button
               colorScheme="blue"
@@ -351,13 +351,21 @@ const App = () => {
               Limpar
             </Button>
           </Flex>
-
-          {isSave && <Text mt={4} color="green.500">Notícia salva com sucesso!</Text>}
-          {isDeleted && <Text mt={4} color="red.500">Notícia excluída com sucesso!</Text>}
+          {isSave && (
+            <Text mt={4} color="green.500">
+              Notícia salva com sucesso!
+            </Text>
+          )}
+          {isDeleted && (
+            <Text mt={4} color="red.500">
+              Notícia excluída com sucesso!
+            </Text>
+          )}
           {isLoading && <Text mt={4}>Carregando...</Text>}
-
-          <Heading mt={8} as="h3" size="lg">Notícias Cadastradas</Heading>
-          <br/>
+          <Heading mt={8} as="h3" size="lg">
+            Notícias Cadastradas
+          </Heading>
+          <br />
           {dataNews.map((news) => (
             <Box
               key={news.id}
@@ -368,35 +376,48 @@ const App = () => {
               shadow="sm"
             >
               <Center>
-                
-              <Heading size="xl">{news.article_title}</Heading>
+                <Heading size="xl">{news.article_title}</Heading>
               </Center>
-              <br/>
+              <br />
               <Text mt={2}>Por: {news.reporter_name}</Text>
-              <Text mt={2} mb={2}>Data: {moment(news.publicated_date).format('DD/MM/YYYY')}</Text>
-       
+              <Text mt={2} mb={2}>
+                Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
+              </Text>
               <Center>
-                <br/>
-              
-              <Box
-                as="img"
-                src={news.image_link}
-                alt={news.article_title}
-                borderRadius="md"
-                //boxSize="1200px"
-                width={"1200px"}
-                objectFit="cover"
-                mb={2}
-              />
+                <br />
+                <Box
+                  as="img"
+                  src={news.image_link}
+                  alt={news.article_title}
+                  borderRadius="md"
+                  width={'1200px'}
+                  objectFit="cover"
+                  mb={2}
+                />
               </Center>
-              <Text mt={2} dangerouslySetInnerHTML={{ __html: news.article_main }} />
-              
+              <Text
+                mt={2}
+                dangerouslySetInnerHTML={{ __html: news.article_main }}
+              />
+              <Center>
+                {(Array.isArray(news.article_tags) &&
+                  news.article_tags.length > 0 &&
+                  news.article_tags.map((tag) => (
+                    <Tag
+                      key={tag.label}
+                      colorScheme={tag.color}
+                      borderRadius="full"
+                      mx={1}
+                    >
+                      <TagLabel>{tag.label}</TagLabel>
+                    </Tag>
+                  ))) || <Text></Text>}
+              </Center>
+
               <Flex mt={2} justify="space-between">
                 <Button
                   colorScheme="blue"
                   onClick={() => handleDeleteNews(news.id)}
-                  isLoading={isDeleting}
-                  loadingText="Excluindo..."
                 >
                   Excluir
                 </Button>
