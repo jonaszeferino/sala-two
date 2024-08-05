@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import 'quill/dist/quill.snow.css';
 import Sidebar from '../../components/Sidebar';
 import {
@@ -17,6 +17,8 @@ import {
   TagLabel,
   TagCloseButton,
   Select,
+  useToast,
+  Center
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 
@@ -37,6 +39,8 @@ const App = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [editorHtml, setEditorHtml] = useState('');
+  
+  const toast = useToast();
 
   const handleEditorChange = (html) => {
     setEditorHtml(html);
@@ -72,19 +76,17 @@ const App = () => {
     setIsSaving(true);
     setIsSave(false);
     setIsLoading(true);
-  
+
     const data = {
       article_title: title,
       reporter_name: journalist,
       image_link: imageLink,
-      article_main: editorHtml, 
+      article_main: editorHtml,
       article_tags: tags.map((tag) => tag.label).join(', '),
       is_visible: false,
       publicated_date: moment().format('YYYY-MM-DD'),
     };
-  
-    console.log('Dados a serem enviados:', data);
-  
+
     fetch('/api/articles', {
       method: 'POST',
       headers: {
@@ -103,14 +105,28 @@ const App = () => {
       setIsLoading(false);
       setIsSave(true);
       setIsSaving(false);
+      toast({
+        title: 'Notícia salva.',
+        description: 'A notícia foi salva com sucesso.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     })
     .catch(error => {
       console.error('Error:', error);
       setIsLoading(false);
       setIsSaving(false);
+      toast({
+        title: 'Erro ao salvar.',
+        description: 'Ocorreu um erro ao salvar a notícia.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     });
   };
-  
+
   const getNews = async () => {
     try {
       const response = await fetch(`/api/articles`, {
@@ -138,7 +154,7 @@ const App = () => {
   useEffect(() => {
     getNews();
     setIsLoading(true);
-  }, []);
+  }, [toast]);
 
   const availableColors = [
     'whiteAlpha',
@@ -194,14 +210,37 @@ const App = () => {
       });
 
       if (response.ok) {
-        setIsDeleted(false);
+        setIsDeleted(true);
         getNews();
+        toast({
+          title: 'Notícia excluída.',
+          description: 'A notícia foi excluída com sucesso.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
         console.log('Notícia excluída com sucesso!');
       } else {
+        setIsDeleting(false);
         console.error('Erro ao excluir notícia:', response.status);
+        toast({
+          title: 'Erro ao excluir.',
+          description: 'Ocorreu um erro ao excluir a notícia.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
+      setIsDeleting(false);
       console.error('Erro inesperado:', error);
+      toast({
+        title: 'Erro inesperado.',
+        description: 'Ocorreu um erro inesperado ao excluir a notícia.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -318,6 +357,7 @@ const App = () => {
           {isLoading && <Text mt={4}>Carregando...</Text>}
 
           <Heading mt={8} as="h3" size="lg">Notícias Cadastradas</Heading>
+          <br/>
           {dataNews.map((news) => (
             <Box
               key={news.id}
@@ -327,19 +367,30 @@ const App = () => {
               mb={4}
               shadow="sm"
             >
-              <Heading size="md">{news.article_title}</Heading>
+              <Center>
+                
+              <Heading size="xl">{news.article_title}</Heading>
+              </Center>
+              <br/>
               <Text mt={2}>Por: {news.reporter_name}</Text>
               <Text mt={2} mb={2}>Data: {moment(news.publicated_date).format('DD/MM/YYYY')}</Text>
+       
+              <Center>
+                <br/>
+              
               <Box
                 as="img"
                 src={news.image_link}
                 alt={news.article_title}
                 borderRadius="md"
-                boxSize="300px"
+                //boxSize="1200px"
+                width={"1200px"}
                 objectFit="cover"
                 mb={2}
               />
+              </Center>
               <Text mt={2} dangerouslySetInnerHTML={{ __html: news.article_main }} />
+              
               <Flex mt={2} justify="space-between">
                 <Button
                   colorScheme="blue"
