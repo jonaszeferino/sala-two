@@ -16,7 +16,7 @@ import {
   GridItem,
   Card,
   Text,
-  Box,
+  
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect } from 'react';

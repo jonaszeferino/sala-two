@@ -45,7 +45,7 @@ const Sidebar = () => {
                 Videos
               </Text>
             </Link>
-            <Link href="/colunas">
+            <Link href="/admin/create-tips">
               <Text color="white" py={2}>
                 Palpites
               </Text>

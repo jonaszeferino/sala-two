@@ -21,6 +21,7 @@ import {
   Center,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
+import LoggedUser from '@/components/LoggedUser';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -245,7 +246,7 @@ const App = () => {
   return (
     <>
       <Sidebar />
-
+      <LoggedUser />
       <div
         style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
       >
@@ -276,14 +277,12 @@ const App = () => {
           <FormControl>
             <FormLabel>Conteúdo da Notícia</FormLabel>
             <Box
-              
               border="1px"
               borderColor="gray.200"
               padding="4"
               borderRadius="md"
             >
               <ReactQuill
-              
                 theme="snow"
                 value={editorHtml}
                 onChange={handleEditorChange}
@@ -368,73 +367,76 @@ const App = () => {
             Notícias Cadastradas
           </Heading>
           <br />
-          {dataNews.map((news) => (
-            <Box
-              key={news.id}
-              p={4}
-              borderWidth="1px"
-              borderRadius="md"
-              mb={4}
-              shadow="sm"
-              maxWidth={1200}
-            >
-              <Center>
-                <Heading size="xl">{news.article_title}</Heading>
-              </Center>
-              <br />
-              <Text mt={2}>Por: {news.reporter_name}</Text>
-              <Text mt={2} mb={2}>
-                Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
-              </Text>
-              <Center>
-                <br />
+          <Center>
+            <Box>
+              {dataNews.map((news) => (
                 <Box
-                  as="img"
-                  src={news.image_link}
-                  alt={news.article_title}
+                  key={news.id}
+                  p={4}
+                  borderWidth="1px"
                   borderRadius="md"
-                  width={'1200px'}
-                  objectFit="cover"
-                  mb={2}
-                />
-              </Center>
-              <Center>
-                <Text
+                  mb={4}
+                  shadow="sm"
                   maxWidth={1200}
-                  mt={2}
-                  dangerouslySetInnerHTML={{ __html: news.article_main }}
-                  sx={{ textAlign: 'justify' }}
-
-                />
-              </Center>
-              <br/>
-              <br/>
-
-              <Center>
-                {(Array.isArray(news.article_tags) &&
-                  news.article_tags.length > 0 &&
-                  news.article_tags.map((tag) => (
-                    <Tag
-                      key={tag.label}
-                      colorScheme={tag.color}
-                      borderRadius="full"
-                      mx={1}
-                    >
-                      <TagLabel>{tag.label}</TagLabel>
-                    </Tag>
-                  ))) || <Text></Text>}
-              </Center>
-
-              <Flex mt={2} justify="space-between">
-                <Button
-                  colorScheme="blue"
-                  onClick={() => handleDeleteNews(news.id)}
                 >
-                  Excluir
-                </Button>
-              </Flex>
+                  <Center>
+                    <Heading size="xl">{news.article_title}</Heading>
+                  </Center>
+                  <br />
+                  <Text mt={2}>Por: {news.reporter_name}</Text>
+                  <Text mt={2} mb={2}>
+                    Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
+                  </Text>
+                  <Center>
+                    <br />
+                    <Box
+                      as="img"
+                      src={news.image_link}
+                      alt={news.article_title}
+                      borderRadius="md"
+                      width={'1200px'}
+                      objectFit="cover"
+                      mb={2}
+                    />
+                  </Center>
+                  <Center>
+                    <Text
+                      maxWidth={1200}
+                      mt={2}
+                      dangerouslySetInnerHTML={{ __html: news.article_main }}
+                      sx={{ textAlign: 'justify' }}
+                    />
+                  </Center>
+                  <br />
+                  <br />
+
+                  <Center>
+                    {(Array.isArray(news.article_tags) &&
+                      news.article_tags.length > 0 &&
+                      news.article_tags.map((tag) => (
+                        <Tag
+                          key={tag.label}
+                          colorScheme={tag.color}
+                          borderRadius="full"
+                          mx={1}
+                        >
+                          <TagLabel>{tag.label}</TagLabel>
+                        </Tag>
+                      ))) || <Text></Text>}
+                  </Center>
+
+                  <Flex mt={2} justify="space-between">
+                    <Button
+                      colorScheme="blue"
+                      onClick={() => handleDeleteNews(news.id)}
+                    >
+                      Excluir
+                    </Button>
+                  </Flex>
+                </Box>
+              ))}
             </Box>
-          ))}
+          </Center>
         </ChakraProvider>
       </div>
     </>

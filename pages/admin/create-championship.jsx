@@ -17,6 +17,7 @@ Grid,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect, useCallback } from 'react';
+import LoggedUser from '../../components/LoggedUser';
 
 export default function PalpitesForm() {
   const [season, setSeason] = useState('');
@@ -109,6 +110,7 @@ export default function PalpitesForm() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sidebar />
+      <LoggedUser />
 
       <>
         <Center mt="60px" mb="20px">

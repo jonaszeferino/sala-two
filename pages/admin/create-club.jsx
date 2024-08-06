@@ -36,7 +36,6 @@ export default function PalpitesForm() {
   //user verify
 
   useEffect(() => {
-    getClubs();
     setIsLoading(true);
   }, []);
 
@@ -74,37 +73,37 @@ export default function PalpitesForm() {
     e.preventDefault();
     console.log('Botão Salvar clicado');
     await InsertClub();
-    getClubs();
   };
 
   //Get clubs
-  const getClubs = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/getClubs`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('Clubes retornados:', userData);
-        setIsLoading(false);
-        setClubs(userData);
-      } else {
-        if (response.status === 404) {
-          setIsLoading(false);
-          setNewUser(true);
-        }
-        console.error('Erro ao buscar o usuário:', response.status);
-      }
-    } catch (error) {
-      console.error('Erro inesperado:', error);
-    }
-  };
+  // const getClubs = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch(`/api/getClubs`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //     if (response.ok) {
+  //       const userData = await response.json();
+  //       console.log('Clubes retornados:', userData);
+  //       setIsLoading(false);
+  //       setClubs(userData);
+  //     } else {
+  //       if (response.status === 404) {
+  //         setIsLoading(false);
+  //         setNewUser(true);
+  //       }
+  //       console.error('Erro ao buscar o usuário:', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Erro inesperado:', error);
+  //   }
+  // };
 
   // Session Verify
+ 
   useEffect(() => {
     let mounted = true;
     async function getInitialSession() {
@@ -150,8 +149,8 @@ export default function PalpitesForm() {
           </Center>
           <ChakraProvider>
             <Center mt="50px">
-              {' '}
-              {/* Adicionando margem no topo */}
+              
+              
               <VStack spacing={4} align="stretch">
                 <HStack spacing={4}>
                   <FormControl id="clubName">
@@ -206,14 +205,14 @@ export default function PalpitesForm() {
                     borderWidth="1px"
                     borderRadius="lg"
                     p={4}
-                    width="100%" // Ocupa toda a largura da coluna
+                    width="100%" 
                     textAlign="center"
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
                     flexDirection="column"
-                    marginLeft="50px" // Margem interna à esquerda
-                    marginRight="10px" // Margem interna à direita
+                    marginLeft="50px"
+                    marginRight="10px"
                   >
                     <Text fontWeight="bold">Time: {club.club_name}</Text>
                     <Box boxSize="150px" marginTop="10px">

@@ -17,6 +17,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import Head from "next/head";
+import LoggedUser from '../../components/LoggedUser';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState("");

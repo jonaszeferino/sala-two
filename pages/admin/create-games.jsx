@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect, useCallback } from 'react';
+import LoggedUser from '../../components/LoggedUser';
 
 export default function PalpitesForm() {
   const [homeClub, setHomeClub] = useState('');
@@ -151,6 +152,7 @@ export default function PalpitesForm() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sidebar />
+      <LoggedUser />
       {showCreateGames === true ? (
         <>
           <Center mt="60px" mb="20px">

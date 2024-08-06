@@ -20,6 +20,7 @@ import {
   AlertDialogCloseButton,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
+import LoggedUser from '@/components/LoggedUser';
 
 const App = () => {
   const [dataNews, setDataNews] = useState([]);
@@ -231,6 +232,7 @@ const App = () => {
   return (
     <>
       <Sidebar />
+      <LoggedUser />
       <div
         style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
       >
@@ -277,6 +279,7 @@ const App = () => {
                     value={dateTime[news.id] || ''}
                     onChange={(e) => handleChange(news.id, e)}
                     mb={2}
+                    maxWidth={300}
                   />
                   <Button
                     m={2}

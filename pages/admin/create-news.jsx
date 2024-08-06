@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import Sidebar from '../../components/Sidebar';
+import LoggedUser from '../../components/LoggedUser';
 import {
   ChakraProvider,
   Button,

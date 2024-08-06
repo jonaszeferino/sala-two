@@ -1,18 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Button,
-  Input,
-  Spinner,
-  Text,
-  ChakraProvider,
-  InputGroup,
-  InputRightElement,
-  Flex,
-  useMediaQuery,
-  IconButton,
-  Center,
-} from '@chakra-ui/react';
+import { Button, ChakraProvider, Center } from '@chakra-ui/react';
 import { supabase } from '../utils/supabaseClientAdmin';
 
 const LoggedUser = () => {
@@ -48,7 +35,9 @@ const LoggedUser = () => {
     <ChakraProvider>
       {session ? (
         <p>
-          Usuário: {session.user.email} <br />
+          <Center>
+            Usuário: {session.user.email} <br />
+          </Center>
           <Center>
             <Button
               onClick={() => supabase.auth.signOut()}
@@ -60,7 +49,6 @@ const LoggedUser = () => {
           </Center>
         </p>
       ) : null}
-      {/* Resto do seu código */}
     </ChakraProvider>
   );
 };
