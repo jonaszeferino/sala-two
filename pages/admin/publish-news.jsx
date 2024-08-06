@@ -266,14 +266,6 @@ const App = () => {
               </Text>
 
               <Flex mt={2} m={2} p={2} direction="column">
-                <Button
-                  m={2}
-                  p={2}
-                  colorScheme="red"
-                  onClick={() => handleOpenDeleteModal(news.id)}
-                >
-                  Excluir
-                </Button>
                 <br />
                 <FormControl>
                   <FormLabel htmlFor={`datetime-local-${news.id}`}>
@@ -306,6 +298,14 @@ const App = () => {
                   >
                     {visibility[news.id] ? 'Retirar Publicação' : 'Publicar'}
                   </Button>
+                  <Button
+                    m={2}
+                    p={2}
+                    colorScheme="red"
+                    onClick={() => handleOpenDeleteModal(news.id)}
+                  >
+                    Excluir
+                  </Button>
                 </Flex>
               </Flex>
             </Box>
@@ -326,7 +326,8 @@ const App = () => {
               <AlertDialogCloseButton />
 
               <AlertDialogBody>
-                Tem certeza de que deseja excluir esta notícia? Esta ação não pode ser desfeita.
+                Tem certeza de que deseja excluir esta notícia? Esta ação não
+                pode ser desfeita.
               </AlertDialogBody>
 
               <AlertDialogFooter>

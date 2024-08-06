@@ -5,13 +5,13 @@ export const Navbar = () => {
   return (
     <Box bg="linear-gradient(to right, blue, red)" py={4} w="100%">
       <Flex align="center" justify="center" gap="20px">
-        <Link as={NextLink} href="/news" color="white">
+        <Link as={NextLink} href="/noticias" color="white">
           Notícias
         </Link>
-        <Link as={NextLink} href="/news" color="white">
+        <Link as={NextLink} href="/artigos" color="white">
           Colunas
         </Link>
-        <Link as={NextLink} href="/columns" color="white">
+        <Link as={NextLink} href="/" color="white">
           <Box boxSize="100px">
             <Image src="/sala.png" alt="logo" borderRadius="full" />
           </Box>

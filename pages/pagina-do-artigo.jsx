@@ -1,30 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import React, { useEffect, useState } from 'react';
+
 import {
   ChakraProvider,
   Text,
   Center,
   Heading,
   Box,
-  Flex,
   Tag,
-  HStack,
   TagLabel,
-  Button
+  
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 import { Navbar } from '../components/Navbar';
-import { Social } from '../components/Social';
+import { useRouter } from "next/router";
+
 
 const App = () => {
   const [isLoading, setIsLoading] = useState('');
   const [dataNews, setDataNews] = useState([]);
-  const [id, setId] = useState('');
   const [tags, setTags] = useState('');
+  const router = useRouter();
+  const id = router.query.id;
 
   const getNews = async () => {
     try {
-      const response = await fetch(`/api/articlesToSite?=15`, {
+      const response = await fetch(`/api/articlesToSite?=${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -56,6 +56,7 @@ const App = () => {
     <>
       <ChakraProvider>
         <Navbar />
+        <br/>
         <Center>
    
        <br />
