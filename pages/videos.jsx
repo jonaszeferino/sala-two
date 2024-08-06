@@ -16,7 +16,7 @@ const Videos = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState([true]);
   useEffect(() => {
-    fetch('/api/getVideosNew')
+    fetch('/api/social')
       .then((response) => response.json())
       .then((data) => {
         setData(data);
@@ -50,15 +50,19 @@ const Videos = () => {
               <Heading>{item.video_title}</Heading>
             </Center>
             <Card overflow="hidden" variant="outline">
-              <iframe
-                width="100%"
-                height="360px"
-                src={item.video_link}
-                title={`YouTube Video ${index + 1}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </Card>
+                {item.link ? (
+                  <iframe
+                    width="100%"
+                    height="360px"
+                    src={item.link}
+                    title={`YouTube Video ${index + 1}`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <p>Link não disponível</p>
+                )}
+              </Card>
           </GridItem>
         ))}
       </Grid>

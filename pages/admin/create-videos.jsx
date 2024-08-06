@@ -19,14 +19,13 @@ import {
   Box,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
-import { useState, useEffect, React } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function PalpitesForm() {
   const [videoTitle, setVideoTitle] = useState('');
   const [videoLink, setVideoLink] = useState('');
-  const [isSaving, setIsSaving] = useState('');
-  const [isSave, setIsSave] = useState('');
-  const [clubs, setClubs] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSave, setIsSave] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const [data, setData] = useState([]);
@@ -40,56 +39,51 @@ export default function PalpitesForm() {
   };
 
   const handleVideoLinkChange = (event) => {
-    const inputText = event.target.value;
-    const regex =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = inputText.match(regex);
+    setVideoLink(event.target.value);
+  };
 
+  const getYoutubeEmbedUrl = (url) => {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
     if (match) {
-      const videoID = match[1];
-      const youtubeURL = `https://www.youtube.com/embed/${videoID}`;
-      setVideoLink(youtubeURL);
-    } else {
-      setVideoLink(inputText);
+      return `https://www.youtube.com/embed/${match[1]}`;
     }
+    return url;
   };
 
   const InsertVideo = async () => {
     setIsSaving(true);
-    console.log('Chamou!');
 
     try {
-      await fetch('/api/postVideos', {
+      await fetch('/api/social', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          video_title: videoTitle,
-          video_link: videoLink,
+          link: getYoutubeEmbedUrl(videoLink),
+          title: videoTitle,
           social_type: selectedPlatform,
         }),
       });
 
       setIsSaving(false);
       setIsSave(true);
-      return;
     } catch (error) {
-      console.error(error);
-      console.log('erro', error);
+      console.error('erro', error);
+      setIsSaving(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Botão Salvar clicado');
     await InsertVideo();
   };
 
   const getVideos = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/getVideosNew`, {
+      const response = await fetch(`/api/social`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -97,18 +91,14 @@ export default function PalpitesForm() {
       });
       if (response.ok) {
         const userData = await response.json();
-        console.log('Clubes retornados:', userData);
-        setIsLoading(false);
         setData(userData);
       } else {
-        if (response.status === 404) {
-          setIsLoading(false);
-        }
         console.error('Erro ao buscar videos:', response.status);
       }
     } catch (error) {
       console.error('Erro inesperado:', error);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -135,10 +125,9 @@ export default function PalpitesForm() {
       </Center>
       <ChakraProvider>
         <Center mt="50px">
-          {' '}
           <VStack spacing={4} align="stretch">
             <HStack spacing={4}>
-              <FormControl id="clubName">
+              <FormControl id="videoTitle">
                 <FormLabel>Nome do Video</FormLabel>
                 <Input value={videoTitle} onChange={handleVideoTitleChange} />
               </FormControl>
@@ -152,15 +141,13 @@ export default function PalpitesForm() {
                 >
                   <option value="youtube">YouTube</option>
                   <option value="tiktok">TikTok(em desenvolvimento)</option>
-                  <option value="instagram">
-                    Instagram(em desenvolvimento)
-                  </option>
+                  <option value="instagram">Instagram(em desenvolvimento)</option>
                 </Select>
               </FormControl>
             </HStack>
             {selectedPlatform ? (
               <FormControl id="videoLink">
-                <FormLabel>Link do Video</FormLabel>{' '}
+                <FormLabel>Link do Video</FormLabel>
                 <HStack>
                   <Tooltip
                     label="Clique no vídeo em compartilhar e depois em incorporar. Copie o link inteiro."
@@ -207,15 +194,15 @@ export default function PalpitesForm() {
             <GridItem key={index}>
               <Heading>
                 <Center>
-                  <strong>{item.video_title}</strong>
+                  <strong>{item.title}</strong>
                 </Center>
               </Heading>
               <Card overflow="hidden" variant="outline">
-                {item.video_link ? (
+                {item.link ? (
                   <iframe
                     width="100%"
                     height="360px"
-                    src={item.video_link}
+                    src={item.link}
                     title={`YouTube Video ${index + 1}`}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
