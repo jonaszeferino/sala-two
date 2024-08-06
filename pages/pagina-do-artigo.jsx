@@ -7,10 +7,14 @@ import {
   Box,
   Tag,
   TagLabel,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 import { Navbar } from '../components/Navbar';
 import { useRouter } from 'next/router';
+import { Social } from '../components/Social';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +57,17 @@ const App = () => {
       <ChakraProvider>
         <Navbar />
         <br />
+        <Breadcrumb m={10}>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/artigos">Artigos</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink href="/admin/cadastro-veiculos/marcas">
+              Página do Artigo
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+
         <Center>
           <br />
           <br />
@@ -68,12 +83,12 @@ const App = () => {
               maxWidth={1200}
             >
               <Center>
-                <Heading size="xl" maxWidth={1200}>{news.article_title}</Heading>
+                <Heading size="xl" maxWidth={1200}>
+                  {news.article_title}
+                </Heading>
               </Center>
               <br />
-              <Text mt={2}>
-                Por: {news.reporter_name}
-              </Text>
+              <Text mt={2}>Por: {news.reporter_name}</Text>
               <Text mt={2} mb={2}>
                 Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
               </Text>
@@ -115,6 +130,11 @@ const App = () => {
             </Box>
           ))}
         </Center>
+
+        <Center>
+          <Social />
+        </Center>
+        <br />
       </ChakraProvider>
     </>
   );
