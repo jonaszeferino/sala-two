@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Head from 'next/head';
 import Sidebar from '../../components/Sidebar';
 import {
   ChakraProvider,
@@ -21,6 +22,8 @@ import {
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 import LoggedUser from '@/components/LoggedUser';
+import Auth from '../../components/Auth';
+import { supabase } from "../../utils/supabaseClientAdmin";
 
 const App = () => {
   const [dataNews, setDataNews] = useState([]);
@@ -32,6 +35,31 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false); // Estado para o modal
   const toast = useToast();
   const cancelRef = React.useRef();
+  const [session,setSession] = useState(false)
+
+  useEffect(() => {
+    let mounted = true;
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session) {
+          setSession(session);
+        }
+      }
+    }
+    getInitialSession();
+    const { subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const getNews = async () => {
     try {
@@ -229,127 +257,150 @@ const App = () => {
     }
   };
 
+ 
+
   return (
     <>
-      <Sidebar />
-      <LoggedUser />
-      <div
-        style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
-      >
-        <ChakraProvider>
-          <br />
-          <Heading size="xl">Listagem de Artigos</Heading>
-          <br />
-          {dataNews.map((news) => (
-            <Box
-              key={news.id}
-              p={4}
-              borderWidth="1px"
-              borderRadius="md"
-              mb={4}
-              shadow="sm"
-            >
-              <Heading size="m">{news.article_title}</Heading>
-              <Text mt={2}>Por: {news.reporter_name}</Text>
-              <Text mt={2} mb={2}>
-                Data da Criação:{' '}
-                {moment(news.created_at).format('DD/MM/YYYY HH:mm:ss')}
-              </Text>
-              <Text mt={2} mb={2}>
-                Data da Publicação:{' '}
-                {moment(news.publicated_date).format('DD/MM/YYYY HH:mm:ss')}
-              </Text>
-              <Text mt={2} mb={2}>
-                Publicado:{' '}
-                <strong>
-                  {' '}
-                  {visibility[news.id] ? 'Publicado' : 'Não Publicado'}
-                </strong>
-              </Text>
+      <Head>
+        <title>Sala de Secacao</title>
+        <meta name="description" content="Site do Sala de Secacao" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-              <Flex mt={2} m={2} p={2} direction="column">
-                <br />
-                <FormControl>
-                  <FormLabel htmlFor={`datetime-local-${news.id}`}>
-                    Data e Hora de Publicação
-                  </FormLabel>
-                  <Input
-                    id={`datetime-local-${news.id}`}
-                    type="datetime-local"
-                    value={dateTime[news.id] || ''}
-                    onChange={(e) => handleChange(news.id, e)}
-                    mb={2}
-                    maxWidth={300}
-                  />
-                  <Button
-                    m={2}
-                    p={2}
-                    colorScheme="blue"
-                    onClick={() => handleDateChange(news.id, dateTime[news.id])}
-                  >
-                    Atualizar Data e Hora
-                  </Button>
-                </FormControl>
-                <Flex mt={2}>
-                  <Button
-                    m={2}
-                    p={2}
-                    colorScheme={visibility[news.id] ? 'red' : 'green'}
-                    onClick={() =>
-                      handleVisibilityChange(news.id, !visibility[news.id])
-                    }
-                  >
-                    {visibility[news.id] ? 'Retirar Publicação' : 'Publicar'}
-                  </Button>
-                  <Button
-                    m={2}
-                    p={2}
-                    colorScheme="red"
-                    onClick={() => handleOpenDeleteModal(news.id)}
-                  >
-                    Excluir
-                  </Button>
-                </Flex>
-              </Flex>
-            </Box>
-          ))}
-        </ChakraProvider>
-
-        <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={() => setIsOpen(false)}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Confirmar Exclusão
-              </AlertDialogHeader>
-
-              <AlertDialogCloseButton />
-
-              <AlertDialogBody>
-                Tem certeza de que deseja excluir esta notícia? Esta ação não
-                pode ser desfeita.
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button
-                  colorScheme="red"
-                  onClick={handleDeleteNews}
-                  ml={3}
-                  isLoading={isDeleting}
+      {session ? (
+        <>
+          <Sidebar />
+          <LoggedUser />
+          <div
+            style={{
+              marginLeft: '180px',
+              marginRight: '50px',
+              marginTop: '100px',
+            }}
+          >
+            <ChakraProvider>
+              <br />
+              <Heading size="xl">Listagem de Artigos</Heading>
+              <br />
+              {dataNews.map((news) => (
+                <Box
+                  key={news.id}
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  mb={4}
+                  shadow="sm"
                 >
-                  Excluir
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </div>
+                  <Heading size="m">{news.article_title}</Heading>
+                  <Text mt={2}>Por: {news.reporter_name}</Text>
+                  <Text mt={2} mb={2}>
+                    Data da Criação:{' '}
+                    {moment(news.created_at).format('DD/MM/YYYY HH:mm:ss')}
+                  </Text>
+                  <Text mt={2} mb={2}>
+                    Data da Publicação:{' '}
+                    {moment(news.publicated_date).format('DD/MM/YYYY HH:mm:ss')}
+                  </Text>
+                  <Text mt={2} mb={2}>
+                    Publicado:{' '}
+                    <strong>
+                      {' '}
+                      {visibility[news.id] ? 'Publicado' : 'Não Publicado'}
+                    </strong>
+                  </Text>
+
+                  <Flex mt={2} m={2} p={2} direction="column">
+                    <br />
+                    <FormControl>
+                      <FormLabel htmlFor={`datetime-local-${news.id}`}>
+                        Data e Hora de Publicação
+                      </FormLabel>
+                      <Input
+                        id={`datetime-local-${news.id}`}
+                        type="datetime-local"
+                        value={dateTime[news.id] || ''}
+                        onChange={(e) => handleChange(news.id, e)}
+                        mb={2}
+                        maxWidth={300}
+                      />
+                      <Button
+                        m={2}
+                        p={2}
+                        colorScheme="blue"
+                        onClick={() =>
+                          handleDateChange(news.id, dateTime[news.id])
+                        }
+                      >
+                        Atualizar Data e Hora
+                      </Button>
+                    </FormControl>
+                    <Flex mt={2}>
+                      <Button
+                        m={2}
+                        p={2}
+                        colorScheme={visibility[news.id] ? 'red' : 'green'}
+                        onClick={() =>
+                          handleVisibilityChange(news.id, !visibility[news.id])
+                        }
+                      >
+                        {visibility[news.id]
+                          ? 'Retirar Publicação'
+                          : 'Publicar'}
+                      </Button>
+                      <Button
+                        m={2}
+                        p={2}
+                        colorScheme="red"
+                        onClick={() => handleOpenDeleteModal(news.id)}
+                      >
+                        Excluir
+                      </Button>
+                    </Flex>
+                  </Flex>
+                </Box>
+              ))}
+            </ChakraProvider>
+
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={() => setIsOpen(false)}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Confirmar Exclusão
+                  </AlertDialogHeader>
+
+                  <AlertDialogCloseButton />
+
+                  <AlertDialogBody>
+                    Tem certeza de que deseja excluir esta notícia? Esta ação
+                    não pode ser desfeita.
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={handleDeleteNews}
+                      ml={3}
+                      isLoading={isDeleting}
+                    >
+                      Excluir
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+          </div>
+        </>
+      ) : (
+        <Auth />
+      )}
     </>
   );
 };
