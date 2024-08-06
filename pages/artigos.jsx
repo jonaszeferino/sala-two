@@ -8,10 +8,9 @@ import {
   CardBody,
   Button,
   Image,
-  Link,
   Box,
 } from '@chakra-ui/react';
-import NextLink from 'next/link'; // Importe NextLink do Next.js
+import NextLink from 'next/link';
 import { Navbar } from '../components/Navbar';
 import { Social } from '../components/Social';
 import { useEffect, useState } from 'react';

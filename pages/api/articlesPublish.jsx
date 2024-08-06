@@ -1,12 +1,11 @@
 import pool from '../../utils/db';
+import moment from 'moment-timezone';
 
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
+  if (req.method === 'PATCH') {
+    await handlePatch(req, res);
+  } else if (req.method === 'POST') {
     await handleInsert(req, res);
-  } else if (req.method === 'PATCH') {
-    await handleUpdate(req, res);
-  } else if (req.method === 'DELETE') {
-    await handleDelete(req, res);
   } else if (req.method === 'GET') {
     await handleGet(req, res);
   } else {
@@ -14,35 +13,35 @@ export default async function handler(req, res) {
   }
 }
 
-async function handleUpdate(req, res) {
+async function handlePatch(req, res) {
   const { id, is_visible, publicated_date } = req.body;
 
   try {
     const client = await pool.connect();
     try {
-      await client.query('BEGIN');
+      
+      let publicationDate = publicated_date;
+
+      if (!publicationDate) {
+        publicationDate = moment().tz('America/Sao_Paulo').format('YYYY-MM-DDTHH:mm:ssZ');
+      }
 
       const queryText = `
         UPDATE articles
-        SET
-          is_visible = $2,
-          publicated_date = $3
-        WHERE id = $1 
+        SET is_visible = $1, publicated_date = $2
+        WHERE id = $3
+        RETURNING *;
       `;
+      const queryValues = [is_visible, publicationDate, id];
 
-      const queryValues = [
-        id,
-        is_visible,
-        publicated_date,
-      ];
+      const result = await client.query(queryText, queryValues);
 
-      await client.query(queryText, queryValues);
-
-      await client.query('COMMIT');
-
-      res.status(200).json({ message: 'Article updated successfully' });
+      if (result.rows.length === 0) {
+        res.status(404).json({ error: 'Article not found' });
+      } else {
+        res.status(200).json(result.rows[0]);
+      }
     } catch (error) {
-      await client.query('ROLLBACK');
       console.error('Error executing query:', error);
       res.status(500).json({ error: error.message || 'Unknown error' });
     } finally {
@@ -54,4 +53,4 @@ async function handleUpdate(req, res) {
   }
 }
 
-
+// ... other handler functions (handleInsert, handleGet) remain the same
