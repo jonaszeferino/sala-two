@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import {
   ChakraProvider,
   Text,
@@ -8,23 +7,20 @@ import {
   Box,
   Tag,
   TagLabel,
-  
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 import { Navbar } from '../components/Navbar';
-import { useRouter } from "next/router";
-
+import { useRouter } from 'next/router';
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [dataNews, setDataNews] = useState([]);
-  const [tags, setTags] = useState('');
   const router = useRouter();
-  const id = router.query.id;
+  const { id } = router.query;
 
-  const getNews = async () => {
+  const getNews = async (articleId) => {
     try {
-      const response = await fetch(`/api/articlesToSite?=${id}`, {
+      const response = await fetch(`/api/articlesToSite?id=${articleId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,36 +28,35 @@ const App = () => {
       });
       if (response.ok) {
         const dataRecive = await response.json();
-        console.log('Dados do usuário:', dataRecive);
+        console.log('Dados do artigo:', dataRecive);
         setIsLoading(false);
         setDataNews(dataRecive);
       } else {
-        if (response.status === 404) {
-          setIsLoading(false);
-        }
-        console.error('Erro ao buscar o usuário:', response.status);
+        setIsLoading(false);
+        console.error('Erro ao buscar o artigo:', response.status);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error('Erro inesperado:', error);
     }
   };
 
   useEffect(() => {
-    console.log('Chamou o useEffect');
-    getNews();
-    setIsLoading(true);
-  }, []);
+    if (id) {
+      setIsLoading(true);
+      getNews(id);
+    }
+  }, [id]);
 
   return (
     <>
       <ChakraProvider>
         <Navbar />
-        <br/>
+        <br />
         <Center>
-   
-       <br />
-       <br />
-       <br />
+          <br />
+          <br />
+          <br />
           {dataNews.map((news) => (
             <Box
               key={news.id}
@@ -70,13 +65,16 @@ const App = () => {
               borderRadius="md"
               mb={4}
               shadow="sm"
+              maxWidth={1200}
             >
               <Center>
-                <Heading size="xl">{news.article_title}</Heading>
+                <Heading size="xl" maxWidth={1200}>{news.article_title}</Heading>
               </Center>
               <br />
-              <Text ml={15} mt={2}>Por: {news.reporter_name}</Text>
-              <Text ml={15} mt={2} mb={2}>
+              <Text mt={2}>
+                Por: {news.reporter_name}
+              </Text>
+              <Text mt={2} mb={2}>
                 Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
               </Text>
               <Center>
@@ -92,15 +90,16 @@ const App = () => {
                 />
               </Center>
               <Center>
-              <Text maxWidth={1200}
-                mt={2}
-                dangerouslySetInnerHTML={{ __html: news.article_main }}
-                sx={{ textAlign: 'justify' }}
-              />
+                <Text
+                  maxWidth={1200}
+                  mt={2}
+                  dangerouslySetInnerHTML={{ __html: news.article_main }}
+                  sx={{ textAlign: 'justify' }}
+                />
               </Center>
-              <br/>
+              <br />
               <Center>
-                {(Array.isArray(news.article_tags) &&
+                {Array.isArray(news.article_tags) &&
                   news.article_tags.length > 0 &&
                   news.article_tags.map((tag) => (
                     <Tag
@@ -111,10 +110,8 @@ const App = () => {
                     >
                       <TagLabel>{tag.label}</TagLabel>
                     </Tag>
-                  ))) || <Text></Text>}
+                  ))}
               </Center>
-
-    
             </Box>
           ))}
         </Center>

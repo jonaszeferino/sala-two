@@ -166,8 +166,8 @@ async function handleGet(req, res) {
   try {
     const client = await pool.connect();
     try {
-      let queryText = 'SELECT * FROM articles';
-      const queryValues = [];
+      let queryText = 'SELECT * FROM articles order by publicated_date DESC';
+      const queryValues = []; 
 
       if (id) {
         queryText += ' WHERE id = $1';

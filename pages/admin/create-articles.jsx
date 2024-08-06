@@ -364,7 +364,7 @@ const App = () => {
             </Text>
           )}
           {isLoading && <Text mt={4}>Carregando...</Text>}
-          <Heading mt={8} as="h3" size="lg">
+          <Heading mt={8} as="h3" size="lg" maxWidth={1200}>
             Notícias Cadastradas
           </Heading>
           <br />
@@ -376,6 +376,7 @@ const App = () => {
               borderRadius="md"
               mb={4}
               shadow="sm"
+              maxWidth={1200}
             >
               <Center>
                 <Heading size="xl">{news.article_title}</Heading>

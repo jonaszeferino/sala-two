@@ -17,11 +17,9 @@ async function handleGet(req, res) {
   try {
     const client = await pool.connect();
     try {
-      
       const currentBrazilTime = moment().tz('America/Sao_Paulo').format('YYYY-MM-DD HH:mm:ss');
       const currentUTC = moment.utc(currentBrazilTime).format('YYYY-MM-DD HH:mm:ss');
 
-      
       let queryText = 'SELECT * FROM articles WHERE publicated_date > $1 AND is_visible = true';
       const queryValues = [currentUTC];
 
@@ -29,6 +27,8 @@ async function handleGet(req, res) {
         queryText += ' AND id = $2';
         queryValues.push(parseInt(id, 10));
       }
+
+      queryText += ' ORDER BY publicated_date DESC';
 
       const result = await client.query(queryText, queryValues);
       res.status(200).json(result.rows);

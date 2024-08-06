@@ -27,7 +27,7 @@ async function handleUpdate(req, res) {
         SET
           is_visible = $2,
           publicated_date = $3
-        WHERE id = $1
+        WHERE id = $1 
       `;
 
       const queryValues = [
