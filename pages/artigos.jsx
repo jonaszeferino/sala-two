@@ -108,7 +108,7 @@ const News = () => {
                       }}
                       sx={{ textAlign: 'justify' }}
                     />
-                    <NextLink href={`/pagina-da-coluna?id=${item.id}`} passHref>
+                    <NextLink href={`/pagina-do-artigo?id=${item.id}`} passHref>
                       <Button ml="10px" variant="link" colorScheme="blue">
                         Veja mais
                       </Button>
