@@ -35,11 +35,6 @@ const Sidebar = () => {
                 Times
               </Text>
             </Link>
-            <Link href="/admin/create-articles">
-              <Text color="white" py={2}>
-                Artigos
-              </Text>
-            </Link>
             <Link href="/admin/create-videos">
               <Text color="white" py={2}>
                 Videos
@@ -48,6 +43,11 @@ const Sidebar = () => {
             <Link href="/admin/create-tips">
               <Text color="white" py={2}>
                 Palpites
+              </Text>
+            </Link>
+            <Link href="/admin/create-articles">
+              <Text color="white" py={2}>
+                Artigos
               </Text>
             </Link>
             <Link href="/admin/publish-news">

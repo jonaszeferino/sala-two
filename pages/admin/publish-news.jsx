@@ -23,7 +23,7 @@ import {
 import moment from 'moment-timezone';
 import LoggedUser from '@/components/LoggedUser';
 import Auth from '../../components/Auth';
-import { supabase } from "../../utils/supabaseClientAdmin";
+import { supabase } from '../../utils/supabaseClientAdmin';
 
 const App = () => {
   const [dataNews, setDataNews] = useState([]);
@@ -35,7 +35,7 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false); // Estado para o modal
   const toast = useToast();
   const cancelRef = React.useRef();
-  const [session,setSession] = useState(false)
+  const [session, setSession] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -256,8 +256,6 @@ const App = () => {
       });
     }
   };
-
- 
 
   return (
     <>

@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  Box,
   Button,
-  Input,
-  Text,
   ChakraProvider,
   Center,
-} from "@chakra-ui/react";
-import { supabase } from "../../utils/supabaseClientAdmin";
-import Auth from "../../components/Auth";
-import Head from "next/head";
+} from '@chakra-ui/react';
+import { supabase } from '../../utils/supabaseClientAdmin';
+import Auth from '../../components/Auth';
+import Head from 'next/head';
 
 export default function SignUp() {
   const [session, setSession] = useState(null);

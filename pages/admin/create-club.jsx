@@ -28,10 +28,8 @@ export default function PalpitesForm() {
   const [isSave, setIsSave] = useState(false);
   const [clubs, setClubs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // auth
   const [session, setSession] = useState(null);
-  const [emailInfo, setEmailInfo] = useState('');
+  
 
   //user verify
 
@@ -75,34 +73,6 @@ export default function PalpitesForm() {
     await InsertClub();
   };
 
-  //Get clubs
-  // const getClubs = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await fetch(`/api/getClubs`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //     if (response.ok) {
-  //       const userData = await response.json();
-  //       console.log('Clubes retornados:', userData);
-  //       setIsLoading(false);
-  //       setClubs(userData);
-  //     } else {
-  //       if (response.status === 404) {
-  //         setIsLoading(false);
-  //         setNewUser(true);
-  //       }
-  //       console.error('Erro ao buscar o usuário:', response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Erro inesperado:', error);
-  //   }
-  // };
-
-  // Session Verify
  
   useEffect(() => {
     let mounted = true;

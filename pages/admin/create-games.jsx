@@ -22,6 +22,8 @@ import {
 import Sidebar from '../../components/Sidebar';
 import { useState, useEffect, useCallback } from 'react';
 import LoggedUser from '../../components/LoggedUser';
+import { supabase } from '../../utils/supabaseClientAdmin';
+import Auth from '../../components/Auth';
 
 export default function PalpitesForm() {
   const [homeClub, setHomeClub] = useState('');
@@ -35,6 +37,31 @@ export default function PalpitesForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [dataGame, setDataGame] = useState([]);
+  const [session,setSession] =useState(false)
+
+  useEffect(() => {
+    let mounted = true;
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session) {
+          setSession(session);
+        }
+      }
+    }
+    getInitialSession();
+    const { subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const getGames = async () => {
     try {
@@ -122,7 +149,7 @@ export default function PalpitesForm() {
       away_club: awayClub,
       date: date,
       championship: championship,
-      round: round
+      round: round,
     };
 
     fetch('/api/postGames', {
@@ -144,222 +171,228 @@ export default function PalpitesForm() {
   };
 
   return (
-    <ChakraProvider>
+    <>
       <Head>
         <title>Sala de Secacao</title>
         <meta name="description" content="Site do Sala de Secacao" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Sidebar />
-      <LoggedUser />
-      {showCreateGames === true ? (
-        <>
-          <Center mt="60px" mb="20px">
-            <Heading>Criar Partidas</Heading>
-          </Center>
 
-          <Center ml="100px">
-            <VStack spacing={4} align="stretch">
-              <HStack spacing={4}>
-                <FormControl id="homeClub">
-                  <FormLabel>Time em Casa</FormLabel>
-                  <Select value={homeClub} onChange={handleHomeClubChange}>
-                    {clubs.map((club) => (
-                      <option key={club._id} value={club.club_name}>
-                        {club.club_name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
+      {session ? (
+        <ChakraProvider>
+          <Sidebar />
+          <LoggedUser />
+          {showCreateGames === true ? (
+            <>
+              <Center mt="60px" mb="20px">
+                <Heading>Criar Partidas</Heading>
+              </Center>
 
-                <FormControl id="awayClub">
-                  <FormLabel>Fora de Casa</FormLabel>
-                  <Select value={awayClub} onChange={handleAwayClubChange}>
-                    {clubs.map((club) => (
-                      <option key={club._id} value={club.club_name}>
-                        {club.club_name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl id="date">
-                  <FormLabel>Data e hora do Jogo</FormLabel>
-                  <Input
-                    type="datetime-local"
-                    value={date}
-                    onChange={handleDate}
-                  />
-                </FormControl>
-
-                <FormControl id="championship">
-                  <FormLabel>Campeonato</FormLabel>
-                  <Input
-                    type="text"
-                    value={championship}
-                    onChange={handleChampioship}
-                  />
-                </FormControl>
-
-
-                <FormControl id="round">
-                  <FormLabel>Rodada</FormLabel>
-                  <Input
-                    type="text"
-                    value={round}
-                    onChange={handleRoundChange}
-                  />
-                </FormControl>
-              </HStack>
-
-              <Button
-                isDisabled={isSaving}
-                colorScheme="blue"
-                onClick={saveGames}
-              >
-                Salvar Partida
-              </Button>
-            </VStack>
-          </Center>
-        </>
-      ) : (
-        <Center>
-          <Text>Aguarde, tela carregando </Text>
-        </Center>
-      )}
-
-      {isSaving === true ? <Text>Salvando...</Text> : null}
-      {isSave === true ? <Text>Salvo..</Text> : null}
-      <br />
-      <br />
-      <Divider />
-      <Center mt="50px">
-        <Heading>Partidas Salvas</Heading>
-      </Center>
-
-      <Center>
-        <Box borderRadius="10px">
-          {isLoading ? (
-            <Text>Carregando...</Text>
-          ) : (
-            dataGame.map((item, index) => (
-              <Card
-                key={index}
-                display="flex"
-                overflow="hidden"
-                variant="outline"
-                style={{ margin: '10px' }}
-                mt="120px"
-                width="600px"
-              >
-                <Box mt="20px">
-                  <Center>
-                    <Text>{item.date}</Text>
-                    <br />
-                  </Center>
-                </Box>
-
-                <Box mt="20px">
-                  <Center>
-                    <Text>Rodada:{item.round}</Text>
-                    <br />
-                  </Center>
-                </Box>
-
-                <Box mt="2px">
-                  <Center>
-                    <Text>{item.championship}</Text>
-                    <br />
-                  </Center>
-                </Box>
-                <Center>
-                  <Box>
-                    <FormControl id="switch">
-                      <Switch colorScheme="teal" size="lg" />
+              <Center ml="100px">
+                <VStack spacing={4} align="stretch">
+                  <HStack spacing={4}>
+                    <FormControl id="homeClub">
+                      <FormLabel>Time em Casa</FormLabel>
+                      <Select value={homeClub} onChange={handleHomeClubChange}>
+                        {clubs.map((club) => (
+                          <option key={club._id} value={club.club_name}>
+                            {club.club_name}
+                          </option>
+                        ))}
+                      </Select>
                     </FormControl>
-                  </Box>
-                </Center>
-                <Box
-                  display="flex"
-                  flexDirection={{ base: 'column', md: 'row' }}
-                  justifyContent={{ base: 'center', md: 'space-between' }}
-                  alignItems="center"
-                  width="600px"
-                >
-                  <Box
-                    textAlign={{ base: 'center', md: 'left' }}
-                    mb={{ base: '4', md: '0' }}
+
+                    <FormControl id="awayClub">
+                      <FormLabel>Fora de Casa</FormLabel>
+                      <Select value={awayClub} onChange={handleAwayClubChange}>
+                        {clubs.map((club) => (
+                          <option key={club._id} value={club.club_name}>
+                            {club.club_name}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                    <FormControl id="date">
+                      <FormLabel>Data e hora do Jogo</FormLabel>
+                      <Input
+                        type="datetime-local"
+                        value={date}
+                        onChange={handleDate}
+                      />
+                    </FormControl>
+
+                    <FormControl id="championship">
+                      <FormLabel>Campeonato</FormLabel>
+                      <Input
+                        type="text"
+                        value={championship}
+                        onChange={handleChampioship}
+                      />
+                    </FormControl>
+
+                    <FormControl id="round">
+                      <FormLabel>Rodada</FormLabel>
+                      <Input
+                        type="text"
+                        value={round}
+                        onChange={handleRoundChange}
+                      />
+                    </FormControl>
+                  </HStack>
+
+                  <Button
+                    isDisabled={isSaving}
+                    colorScheme="blue"
+                    onClick={saveGames}
                   >
-                    <Image
-                      objectFit="cover"
-                      maxW={{ base: '100%', sm: '150px' }}
-                      boxSize="150px"
-                      borderRadius="10px"
-                      src={item.homeClubData}
-                      alt="Imagem do Time de Casa"
-                      loading="lazy"
-                      ml="25px"
-                      mt="25px"
-                    />
-                    <Stack>
-                      <CardBody>
-                        <Center>
-                          <Text>{item.home_club}</Text>
-                        </Center>
-                      </CardBody>
-                    </Stack>
-                  </Box>
-
-                  <FormControl id="clubName" p="10px">
-                    <Input
-                      id={`homeTip_${index}`}
-                      type="number"
-                      value={item.homeTip}
-                    />
-                  </FormControl>
-
-                  <Center>
-                    <Heading>X</Heading>
-                  </Center>
-
-                  <FormControl id="clubName" p="10px">
-                    <Input
-                      id={`awayTip_${index}`}
-                      type="number"
-                      value={item.awayTip}
-                    />
-                  </FormControl>
-
-                  <Box
-                    textAlign={{ base: 'center', md: 'right' }}
-                    ml={{ base: '0', md: '4' }}
-                  >
-                    <Image
-                      objectFit="cover"
-                      maxW={{ base: '100%', sm: '150px' }}
-                      boxSize="150px"
-                      borderRadius="10px"
-                      src={item.awayClubData}
-                      alt="Imagem do Time de Fora"
-                      loading="lazy"
-                      mr="25px"
-                      mt="25px"
-                    />
-                    <Stack>
-                      <CardBody>
-                        <Center>
-                          <Text>{item.away_club}</Text>
-                        </Center>
-                      </CardBody>
-                    </Stack>
-                  </Box>
-                </Box>
-              </Card>
-            ))
+                    Salvar Partida
+                  </Button>
+                </VStack>
+              </Center>
+            </>
+          ) : (
+            <Center>
+              <Text>Aguarde, tela carregando </Text>
+            </Center>
           )}
-        </Box>
-      </Center>
-    </ChakraProvider>
+
+          {isSaving === true ? <Text>Salvando...</Text> : null}
+          {isSave === true ? <Text>Salvo..</Text> : null}
+          <br />
+          <br />
+          <Divider />
+          <Center mt="50px">
+            <Heading>Partidas Salvas</Heading>
+          </Center>
+
+          <Center>
+            <Box borderRadius="10px">
+              {isLoading ? (
+                <Text>Carregando...</Text>
+              ) : (
+                dataGame.map((item, index) => (
+                  <Card
+                    key={index}
+                    display="flex"
+                    overflow="hidden"
+                    variant="outline"
+                    style={{ margin: '10px' }}
+                    mt="120px"
+                    width="600px"
+                  >
+                    <Box mt="20px">
+                      <Center>
+                        <Text>{item.date}</Text>
+                        <br />
+                      </Center>
+                    </Box>
+
+                    <Box mt="20px">
+                      <Center>
+                        <Text>Rodada:{item.round}</Text>
+                        <br />
+                      </Center>
+                    </Box>
+
+                    <Box mt="2px">
+                      <Center>
+                        <Text>{item.championship}</Text>
+                        <br />
+                      </Center>
+                    </Box>
+                    <Center>
+                      <Box>
+                        <FormControl id="switch">
+                          <Switch colorScheme="teal" size="lg" />
+                        </FormControl>
+                      </Box>
+                    </Center>
+                    <Box
+                      display="flex"
+                      flexDirection={{ base: 'column', md: 'row' }}
+                      justifyContent={{ base: 'center', md: 'space-between' }}
+                      alignItems="center"
+                      width="600px"
+                    >
+                      <Box
+                        textAlign={{ base: 'center', md: 'left' }}
+                        mb={{ base: '4', md: '0' }}
+                      >
+                        <Image
+                          objectFit="cover"
+                          maxW={{ base: '100%', sm: '150px' }}
+                          boxSize="150px"
+                          borderRadius="10px"
+                          src={item.homeClubData}
+                          alt="Imagem do Time de Casa"
+                          loading="lazy"
+                          ml="25px"
+                          mt="25px"
+                        />
+                        <Stack>
+                          <CardBody>
+                            <Center>
+                              <Text>{item.home_club}</Text>
+                            </Center>
+                          </CardBody>
+                        </Stack>
+                      </Box>
+
+                      <FormControl id="clubName" p="10px">
+                        <Input
+                          id={`homeTip_${index}`}
+                          type="number"
+                          value={item.homeTip}
+                        />
+                      </FormControl>
+
+                      <Center>
+                        <Heading>X</Heading>
+                      </Center>
+
+                      <FormControl id="clubName" p="10px">
+                        <Input
+                          id={`awayTip_${index}`}
+                          type="number"
+                          value={item.awayTip}
+                        />
+                      </FormControl>
+
+                      <Box
+                        textAlign={{ base: 'center', md: 'right' }}
+                        ml={{ base: '0', md: '4' }}
+                      >
+                        <Image
+                          objectFit="cover"
+                          maxW={{ base: '100%', sm: '150px' }}
+                          boxSize="150px"
+                          borderRadius="10px"
+                          src={item.awayClubData}
+                          alt="Imagem do Time de Fora"
+                          loading="lazy"
+                          mr="25px"
+                          mt="25px"
+                        />
+                        <Stack>
+                          <CardBody>
+                            <Center>
+                              <Text>{item.away_club}</Text>
+                            </Center>
+                          </CardBody>
+                        </Stack>
+                      </Box>
+                    </Box>
+                  </Card>
+                ))
+              )}
+            </Box>
+          </Center>
+        </ChakraProvider>
+      ) : (
+        <Auth />
+      )}
+    </>
   );
 }

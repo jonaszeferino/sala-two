@@ -10,53 +10,53 @@ import {
   Text,
   Center,
   HStack,
-Grid,
+  Grid,
   Heading,
-    Divider,
-    Image,
+  Divider,
+  Image,
 } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import LoggedUser from '../../components/LoggedUser';
+import { supabase } from '../../utils/supabaseClientAdmin';
+import Auth from '../../components/Auth';
 
 export default function PalpitesForm() {
   const [season, setSeason] = useState('');
   const [championship, setChampionship] = useState('');
   const [logo, setLogo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const [showCreateGames, setShowCreateGames] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  const [dataGame, setDataGame] = useState([]);
+  const [session, setSession] = useState(false);
 
-  const getChampionships = async () => {
-    try {
-      const response = await fetch(`/api/getChampionships`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('Dados do usuário:', userData);
-        setIsLoading(false);
-        setDataGame(userData);
-      } else {
-        if (response.status === 404) {
-          setIsLoading(false);
+  useEffect(() => {
+    let mounted = true;
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session) {
+          setSession(session);
         }
-        console.error('Erro ao buscar o usuário:', response.status);
       }
-    } catch (error) {
-      console.error('Erro inesperado:', error);
     }
-  };
+    getInitialSession();
+    const { subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    getChampionships()
+    
   }, []);
 
   const handleChampioship = (event) => {
@@ -70,8 +70,6 @@ export default function PalpitesForm() {
   const handleLogo = (event) => {
     setLogo(event.target.value);
   };
-
-  useEffect(() => {}, [getChampionships, isSave]);
 
   const saveChampionships = () => {
     setIsSaving(true);
@@ -102,113 +100,114 @@ export default function PalpitesForm() {
   };
 
   return (
-    <ChakraProvider>
+    <>
       <Head>
         <title>Sala de Secacao</title>
         <meta name="description" content="Site do Sala de Secacao" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Sidebar />
-      <LoggedUser />
 
-      <>
-        <Center mt="60px" mb="20px">
-          <Heading>Criar Campeonato</Heading>
-        </Center>
+      {session ? (
+        <ChakraProvider>
+          <Sidebar />
+          <LoggedUser />
 
-        <Center ml="100px">
-          <VStack spacing={4} align="stretch">
-            <HStack spacing={4}>
-              <FormControl id="championship">
-                <FormLabel>Nome do Campeonado</FormLabel>
-                <Input value={championship} onChange={handleChampioship} />
-              </FormControl>
+          <>
+            <Center mt="60px" mb="20px">
+              <Heading>Criar Campeonato</Heading>
+            </Center>
 
-              <FormControl id="season">
-                <FormLabel>Temporada</FormLabel>
-                <Input type="text" value={season} onChange={handleSeason} />
-              </FormControl>
+            <Center ml="100px">
+              <VStack spacing={4} align="stretch">
+                <HStack spacing={4}>
+                  <FormControl id="championship">
+                    <FormLabel>Nome do Campeonado</FormLabel>
+                    <Input value={championship} onChange={handleChampioship} />
+                  </FormControl>
 
-              <FormControl id="logo">
-                <FormLabel>Logo</FormLabel>
-                <Input type="text" value={logo} onChange={handleLogo} />
-              </FormControl>
-        
-        
-            </HStack>
+                  <FormControl id="season">
+                    <FormLabel>Temporada</FormLabel>
+                    <Input type="text" value={season} onChange={handleSeason} />
+                  </FormControl>
 
-            <Button
-              isDisabled={isSaving}
-              colorScheme="blue"
-              onClick={saveChampionships}
-            >
-              Salvar Partida
-            </Button>
-          </VStack>
-        </Center>
-      </>
+                  <FormControl id="logo">
+                    <FormLabel>Logo</FormLabel>
+                    <Input type="text" value={logo} onChange={handleLogo} />
+                  </FormControl>
+                </HStack>
 
-      {isSaving === true ? <Text>Salvando...</Text> : null}
-      {isSave === true ? <Text>Salvo..</Text> : null}
-      <br />
-      <br />
-      <Divider />
-      <Center mt="50px">
-        <Heading>Campeonatos Salvos</Heading>
-      </Center>
+                <Button
+                  isDisabled={isSaving}
+                  colorScheme="blue"
+                  onClick={saveChampionships}
+                >
+                  Salvar Partida
+                </Button>
+              </VStack>
+            </Center>
+          </>
 
-      <ChakraProvider>
-            <br />
-            <br />
-            <Grid
-              templateColumns={{
-                base: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(4, 1fr)',
-                xl: 'repeat(5, 1fr)',
-              }}
-              gap={6}
-              marginLeft="100px" // Margem à esquerda
-              marginRight="80px" // Margem à direita
-            >
-              {!isLoading ? (
-                dataGame.map((club) => (
-                  <Box
-                    key={club._id}
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    p={4}
-                    width="100%" // Ocupa toda a largura da coluna
-                    textAlign="center"
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    flexDirection="column"
-                    marginLeft="50px" // Margem interna à esquerda
-                    marginRight="10px" // Margem interna à direita
-                  >
-                    <Text fontWeight="bold">Campeonato {club.name}</Text>
-                    <Box boxSize="150px" marginTop="10px">
-                      <Image
-                        src={club.logo}
-                        alt="Club Name"
-                        boxSize="100%"
-                        objectFit="cover"
-                      />
-                    </Box>
+          {isSaving === true ? <Text>Salvando...</Text> : null}
+          {isSave === true ? <Text>Salvo..</Text> : null}
+          <br />
+          <br />
+          <Divider />
+          <Center mt="50px">
+            <Heading>Campeonatos Salvos</Heading>
+          </Center>
+
+          <br />
+          <br />
+          <Grid
+            templateColumns={{
+              base: 'repeat(1, 1fr)',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(4, 1fr)',
+              xl: 'repeat(5, 1fr)',
+            }}
+            gap={6}
+            marginLeft="100px" // Margem à esquerda
+            marginRight="80px" // Margem à direita
+          >
+            {!isLoading ? (
+              dataGame.map((club) => (
+                <Box
+                  key={club._id}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  p={4}
+                  width="100%" // Ocupa toda a largura da coluna
+                  textAlign="center"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  flexDirection="column"
+                  marginLeft="50px" // Margem interna à esquerda
+                  marginRight="10px" // Margem interna à direita
+                >
+                  <Text fontWeight="bold">Campeonato {club.name}</Text>
+                  <Box boxSize="150px" marginTop="10px">
+                    <Image
+                      src={club.logo}
+                      alt="Club Name"
+                      boxSize="100%"
+                      objectFit="cover"
+                    />
                   </Box>
-                ))
-              ) : (
-                <Center mt="100px">
-                  <Text>Loading...</Text>
-                </Center>
-              )}
-            </Grid>
-          </ChakraProvider>
-
-      <Center></Center>
-    </ChakraProvider>
+                </Box>
+              ))
+            ) : (
+              <Center mt="100px">
+                <Text>Loading...</Text>
+              </Center>
+            )}
+          </Grid>
+        </ChakraProvider>
+      ) : (
+        <Auth />
+      )}
+    </>
   );
 }

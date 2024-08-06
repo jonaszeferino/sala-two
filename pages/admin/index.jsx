@@ -1,10 +1,25 @@
 import Head from 'next/head';
-import { ChakraProvider, Center, Box } from '@chakra-ui/react';
-
+import {
+  ChakraProvider,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Text,
+  Center,
+  HStack,
+  Grid,
+  Heading,
+  Divider,
+  Image,
+} from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import LoggedUser from '../../components/LoggedUser';
 import { supabase } from '../../utils/supabaseClientAdmin';
 import Auth from '../../components/Auth';
-import LoggedUser from '../../components/LoggedUser';
+import Sidebar from '../../components/Sidebar';
 
 export default function Home() {
   const [session, setSession] = useState(null);
@@ -34,20 +49,32 @@ export default function Home() {
   }, []);
 
   return (
-    <ChakraProvider>
-      <Head>
-        <title>Sala de Secacao</title>
-        <meta name="description" content="Site do Sala de Secacao" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Box mt="100px">
-        <Center>
-          <LoggedUser />
-        </Center>
+    <>
+      <ChakraProvider>
+        <Head>
+          <title>Sala de Secacao</title>
+          <meta name="description" content="Site do Sala de Secacao" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-        {session ? <Box>Links para as opções</Box> : <Auth />}
-      </Box>
-    </ChakraProvider>
+        {session ? (
+          <ChakraProvider>
+            <Sidebar />
+            <LoggedUser />
+
+            <Center mt="100px">
+              <Heading as="h1" size="2xl">
+                Algumas Métricas futuras
+              </Heading>
+            </Center>
+
+            <Divider />
+          </ChakraProvider>
+        ) : (
+          <Auth />
+        )}
+      </ChakraProvider>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { EditorState } from 'draft-js';
 import 'quill/dist/quill.snow.css';
 import Sidebar from '../../components/Sidebar';
 import {
@@ -21,7 +21,9 @@ import {
   Center,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
-import LoggedUser from '@/components/LoggedUser';
+import LoggedUser from '../../components/LoggedUser';
+import { supabase } from '../../utils/supabaseClientAdmin';
+import Auth from '../../components/Auth';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -36,11 +38,9 @@ const App = () => {
   const [selectedColor, setSelectedColor] = useState('blue');
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [editorHtml, setEditorHtml] = useState('');
   const [session, setSession] = useState(null);
-
 
   const toast = useToast();
 
@@ -245,202 +245,246 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    let mounted = true;
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session) {
+          setSession(session);
+        }
+      }
+    }
+    getInitialSession();
+    const { subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
+
   return (
     <>
-      <Sidebar />
-      <LoggedUser />
-      <div
-        style={{ marginLeft: '180px', marginRight: '50px', marginTop: '100px' }}
-      >
-        <ChakraProvider>
-          <FormControl>
-            <FormLabel>Título Para A Home</FormLabel>
-            <Input type="text" value={title} onChange={handleTitleChange} />
-          </FormControl>
-          <br />
-          <FormControl>
-            <FormLabel>Link da Imagem</FormLabel>
-            <Input
-              type="text"
-              value={imageLink}
-              onChange={handleImageLinkChange}
-            />
-          </FormControl>
-          <br />
-          <FormControl>
-            <FormLabel>Autor</FormLabel>
-            <Input
-              type="text"
-              value={journalist}
-              onChange={handleJournalistChange}
-            />
-          </FormControl>
-          <br />
-          <FormControl>
-            <FormLabel>Conteúdo da Notícia</FormLabel>
-            <Box
-              border="1px"
-              borderColor="gray.200"
-              padding="4"
-              borderRadius="md"
-            >
-              <ReactQuill
-                theme="snow"
-                value={editorHtml}
-                onChange={handleEditorChange}
-              />
-            </Box>
-          </FormControl>
-          <br />
-          <FormControl>
-            <FormLabel>Tags</FormLabel>
-            <Box display="flex" flexWrap="wrap" gap={2}>
-              {tags.map((tag) => (
-                <Tag
-                  key={tag.label}
-                  colorScheme={tag.color}
-                  borderRadius="full"
-                >
-                  <TagLabel>{tag.label}</TagLabel>
-                  <TagCloseButton onClick={() => handleRemoveTag(tag)} />
-                </Tag>
-              ))}
-            </Box>
-            <Box display="flex" mt={2} alignItems="center">
-              <Input
-                placeholder="Nova tag"
-                value={tagInput}
-                onChange={handleTagInputChange}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddTag();
-                  }
-                }}
-              />
-              <Select
-                value={selectedColor}
-                onChange={(e) => handleColorChange(e.target.value)}
-                ml={2}
-                width="150px"
-              >
-                {availableColors.map((color) => (
-                  <option key={color} value={color}>
-                    {color}
-                  </option>
-                ))}
-              </Select>
-              <Button onClick={handleAddTag} ml={2}>
-                Adicionar Tag
-              </Button>
-            </Box>
-          </FormControl>
-          <Flex mt={4} justify="center">
-            <Button
-              colorScheme="blue"
-              onClick={saveNews}
-              isLoading={isSaving}
-              loadingText="Salvando..."
-              mr={2}
-            >
-              Salvar Notícia
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => Clean()}
-              isLoading={isLoading}
-              loadingText="Limpando..."
-            >
-              Limpar
-            </Button>
-          </Flex>
-          {isSave && (
-            <Text mt={4} color="green.500">
-              Notícia salva com sucesso!
-            </Text>
-          )}
-          {isDeleted && (
-            <Text mt={4} color="red.500">
-              Notícia excluída com sucesso!
-            </Text>
-          )}
-          {isLoading && <Text mt={4}>Carregando...</Text>}
-          <Heading mt={8} as="h3" size="lg" maxWidth={1200}>
-            Notícias Cadastradas
-          </Heading>
-          <br />
-          <Center>
-            <Box>
-              {dataNews.map((news) => (
+      <Head>
+        <title>Sala de Secacao</title>
+        <meta name="description" content="Site do Sala de Secacao" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      {session ? (
+        <>
+          <Sidebar />
+          <LoggedUser />
+          <div
+            style={{
+              marginLeft: '180px',
+              marginRight: '50px',
+              marginTop: '100px',
+            }}
+          >
+            <ChakraProvider>
+              <FormControl>
+                <FormLabel>Título Para A Home</FormLabel>
+                <Input type="text" value={title} onChange={handleTitleChange} />
+              </FormControl>
+              <br />
+              <FormControl>
+                <FormLabel>Link da Imagem</FormLabel>
+                <Input
+                  type="text"
+                  value={imageLink}
+                  onChange={handleImageLinkChange}
+                />
+              </FormControl>
+              <br />
+              <FormControl>
+                <FormLabel>Autor</FormLabel>
+                <Input
+                  type="text"
+                  value={journalist}
+                  onChange={handleJournalistChange}
+                />
+              </FormControl>
+              <br />
+              <FormControl>
+                <FormLabel>Conteúdo da Notícia</FormLabel>
                 <Box
-                  key={news.id}
-                  p={4}
-                  borderWidth="1px"
+                  border="1px"
+                  borderColor="gray.200"
+                  padding="4"
                   borderRadius="md"
-                  mb={4}
-                  shadow="sm"
-                  maxWidth={1200}
                 >
-                  <Center>
-                    <Heading size="xl">{news.article_title}</Heading>
-                  </Center>
-                  <br />
-                  <Text mt={2}>Por: {news.reporter_name}</Text>
-                  <Text mt={2} mb={2}>
-                    Data: {moment(news.publicated_date).format('DD/MM/YYYY')}
-                  </Text>
-                  <Center>
-                    <br />
-                    <Box
-                      as="img"
-                      src={news.image_link}
-                      alt={news.article_title}
-                      borderRadius="md"
-                      width={'1200px'}
-                      objectFit="cover"
-                      mb={2}
-                    />
-                  </Center>
-                  <Center>
-                    <Text
-                      maxWidth={1200}
-                      mt={2}
-                      dangerouslySetInnerHTML={{ __html: news.article_main }}
-                      sx={{ textAlign: 'justify' }}
-                    />
-                  </Center>
-                  <br />
-                  <br />
-
-                  <Center>
-                    {(Array.isArray(news.article_tags) &&
-                      news.article_tags.length > 0 &&
-                      news.article_tags.map((tag) => (
-                        <Tag
-                          key={tag.label}
-                          colorScheme={tag.color}
-                          borderRadius="full"
-                          mx={1}
-                        >
-                          <TagLabel>{tag.label}</TagLabel>
-                        </Tag>
-                      ))) || <Text></Text>}
-                  </Center>
-
-                  <Flex mt={2} justify="space-between">
-                    <Button
-                      colorScheme="blue"
-                      onClick={() => handleDeleteNews(news.id)}
-                    >
-                      Excluir
-                    </Button>
-                  </Flex>
+                  <ReactQuill
+                    theme="snow"
+                    value={editorHtml}
+                    onChange={handleEditorChange}
+                  />
                 </Box>
-              ))}
-            </Box>
-          </Center>
-        </ChakraProvider>
-      </div>
+              </FormControl>
+              <br />
+              <FormControl>
+                <FormLabel>Tags</FormLabel>
+                <Box display="flex" flexWrap="wrap" gap={2}>
+                  {tags.map((tag) => (
+                    <Tag
+                      key={tag.label}
+                      colorScheme={tag.color}
+                      borderRadius="full"
+                    >
+                      <TagLabel>{tag.label}</TagLabel>
+                      <TagCloseButton onClick={() => handleRemoveTag(tag)} />
+                    </Tag>
+                  ))}
+                </Box>
+                <Box display="flex" mt={2} alignItems="center">
+                  <Input
+                    placeholder="Nova tag"
+                    value={tagInput}
+                    onChange={handleTagInputChange}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                  />
+                  <Select
+                    value={selectedColor}
+                    onChange={(e) => handleColorChange(e.target.value)}
+                    ml={2}
+                    width="150px"
+                  >
+                    {availableColors.map((color) => (
+                      <option key={color} value={color}>
+                        {color}
+                      </option>
+                    ))}
+                  </Select>
+                  <Button onClick={handleAddTag} ml={2}>
+                    Adicionar Tag
+                  </Button>
+                </Box>
+              </FormControl>
+              <Flex mt={4} justify="center">
+                <Button
+                  colorScheme="blue"
+                  onClick={saveNews}
+                  isLoading={isSaving}
+                  loadingText="Salvando..."
+                  mr={2}
+                >
+                  Salvar Notícia
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={() => Clean()}
+                  isLoading={isLoading}
+                  loadingText="Limpando..."
+                >
+                  Limpar
+                </Button>
+              </Flex>
+              {isSave && (
+                <Text mt={4} color="green.500">
+                  Notícia salva com sucesso!
+                </Text>
+              )}
+              {isDeleted && (
+                <Text mt={4} color="red.500">
+                  Notícia excluída com sucesso!
+                </Text>
+              )}
+              {isLoading && <Text mt={4}>Carregando...</Text>}
+              <Heading mt={8} as="h3" size="lg" maxWidth={1200}>
+                Notícias Cadastradas
+              </Heading>
+              <br />
+              <Center>
+                <Box>
+                  {dataNews.map((news) => (
+                    <Box
+                      key={news.id}
+                      p={4}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      mb={4}
+                      shadow="sm"
+                      maxWidth={1200}
+                    >
+                      <Center>
+                        <Heading size="xl">{news.article_title}</Heading>
+                      </Center>
+                      <br />
+                      <Text mt={2}>Por: {news.reporter_name}</Text>
+                      <Text mt={2} mb={2}>
+                        Data:{' '}
+                        {moment(news.publicated_date).format('DD/MM/YYYY')}
+                      </Text>
+                      <Center>
+                        <br />
+                        <Box
+                          as="img"
+                          src={news.image_link}
+                          alt={news.article_title}
+                          borderRadius="md"
+                          width={'1200px'}
+                          objectFit="cover"
+                          mb={2}
+                        />
+                      </Center>
+                      <Center>
+                        <Text
+                          maxWidth={1200}
+                          mt={2}
+                          dangerouslySetInnerHTML={{
+                            __html: news.article_main,
+                          }}
+                          sx={{ textAlign: 'justify' }}
+                        />
+                      </Center>
+                      <br />
+                      <br />
+
+                      <Center>
+                        {(Array.isArray(news.article_tags) &&
+                          news.article_tags.length > 0 &&
+                          news.article_tags.map((tag) => (
+                            <Tag
+                              key={tag.label}
+                              colorScheme={tag.color}
+                              borderRadius="full"
+                              mx={1}
+                            >
+                              <TagLabel>{tag.label}</TagLabel>
+                            </Tag>
+                          ))) || <Text></Text>}
+                      </Center>
+
+                      <Flex mt={2} justify="space-between">
+                        <Button
+                          colorScheme="blue"
+                          onClick={() => handleDeleteNews(news.id)}
+                        >
+                          Excluir
+                        </Button>
+                      </Flex>
+                    </Box>
+                  ))}
+                </Box>
+              </Center>
+            </ChakraProvider>
+          </div>
+        </>
+      ) : (
+        <Auth />
+      )}
     </>
   );
 };
