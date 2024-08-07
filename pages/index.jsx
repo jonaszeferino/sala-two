@@ -13,6 +13,7 @@ import YoutubeCarousel from '../components/YoutubeCarousel';
 import YoutubeCarouselMobile from '../components/YoutubeCarouselMobile';
 import HomeLeft from '../components/HomeLeft';
 import HomeRight from '../components/HomeRight';
+import ClubFans from '../components/ClubFans';
 
 export default function Home() {
   const [isMobile] = useMediaQuery('(max-width: 768px)');
@@ -27,9 +28,14 @@ export default function Home() {
       </Head>
 
       <Navbar />
+      <br />
+      <Center>
+        <Heading>Qual o seu time?</Heading>
+      </Center>
 
       <Center flexDirection="column" gap="10px" mt="10px">
         <Heading>Acompanhe nossos Reacts</Heading>
+        <br />
         {isMobile ? <YoutubeCarouselMobile /> : <YoutubeCarousel />}
         <br />
         <Heading>Notícias dos Principais Portais e Nossas Colunas</Heading>
@@ -52,7 +58,12 @@ export default function Home() {
           </Flex>
         )}
       </Center>
-
+      <Center>
+        <Heading>Qual o seu time?</Heading>
+      </Center>
+      <br/>
+      <ClubFans />
+      <br/>
       <Social />
     </Flex>
   );
