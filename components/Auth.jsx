@@ -164,7 +164,6 @@ export default function Auth() {
           marginTop={5}
         >
           <Heading as="h1" size="xl" textAlign="center" mb={4}>
-            {/* {isSignUp ? "Cadastre-se" : "Login"} */}
             Login
           </Heading>
           <FormControl>
@@ -197,27 +196,17 @@ export default function Auth() {
           </FormControl>
 
           <Link
-            color="teal.500"
-            href="https://localhost/send-email-password-reset"
+            color="purple"
+            href="/send-email-password-reset"
           >
             Esqueci minha senha
           </Link>
 
           <Center>
-            {/* {isSignUp && (
-              <Button
-                mt={4}
-                colorScheme="teal"
-                size="md"
-                onClick={handleSignUp}
-              >
-                Cadastre-Se
-              </Button>
-            )} */}
             {!isSignUp && (
               <Button
                 mt={4}
-                colorScheme="teal"
+                colorScheme="purple"
                 size="md"
                 onClick={handleSignIn}
               >
@@ -237,28 +226,8 @@ export default function Auth() {
             </ChakraProvider>
           )}
           <br />
-
-          {/* Link para alternar entre Sign In e Sign Up */}
           <Divider my={4} />
-          {/* <Center>
-            <Button
-              mt={4}
-              colorScheme="blue"
-              size="md"
-              leftIcon={<FaGoogle />} // Adicione o ícone do Google aqui
-              onClick={handleGoogleSignIn}
-            >
-              Login com Google
-            </Button>
-          </Center> */}
-          <br />
-          {/* <Center>
-            <Link onClick={changeForm} cursor="pointer">
-              {isSignUp
-                ? "Você já tem uma Conta? Faça o Login!"
-                : "Você é Novo? Cadastre-se!"}
-            </Link>
-          </Center> */}
+
         </Box>
       </Center>
     </ChakraProvider>

@@ -5,7 +5,6 @@ import {
   Flex,
   Divider,
   useMediaQuery,
-  HStack,
   VStack,
 } from '@chakra-ui/react';
 import { Navbar } from '../components/Navbar';
