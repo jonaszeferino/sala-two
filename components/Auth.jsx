@@ -128,9 +128,6 @@ export default function Auth() {
           boxShadow="lg"
         >
           <Heading as="h1" size="lg" textAlign="center" mb={4} color="purple.700">Sala de Secação ADMIN</Heading>
-          {/* <Heading as="h1" size="lg" textAlign="center" mb={4} color="purple.700">
-            {isSignUp ? "Criar Conta" : "Login"}
-          </Heading> */}
           <FormControl mb={4}>
             <FormLabel>Email</FormLabel>
             <Input
@@ -195,16 +192,6 @@ export default function Auth() {
               {alertMessage}
             </Alert>
           )}
-          <Divider my={4} />
-          <Center>
-            {/* <Button
-              leftIcon={<FaGoogle />}
-              colorScheme="purple"
-              onClick={handleGoogleSignIn}
-            >
-              Entrar com Google
-            </Button> */}
-          </Center>
         </Box>
       </Center>
     </ChakraProvider>
