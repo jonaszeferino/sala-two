@@ -32,7 +32,7 @@ export default function Home() {
         <Heading>Acompanhe nossos Reacts</Heading>
         {isMobile ? <YoutubeCarouselMobile /> : <YoutubeCarousel />}
         <br />
-        <Heading>Acompanhe as notícias e nossas colunas</Heading>
+        <Heading>Notícias dos Principais Portais e Nossas Colunas</Heading>
         <br />
 
         {isMobile ? (
