@@ -1,5 +1,5 @@
-import react, { useState, useEffect } from "react";
-import { supabase } from "../utils/supabaseClientAdmin"; // Importe o 'supabase' desta forma
+import React, { useState, useEffect } from "react";
+import { supabase } from "../utils/supabaseClientAdmin";
 import {
   Box,
   Heading,
@@ -15,6 +15,8 @@ import {
   Divider,
   InputGroup,
   InputRightElement,
+  Stack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
 
@@ -26,8 +28,7 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -39,26 +40,17 @@ export default function Auth() {
         email: email,
         password: password,
       });
-      console.log("User:", user);
-      console.log("Session:", session);
-      console.log("Error:", error);
       setAlertMessage("Verifique seu E-mail");
       if (user) {
         console.log("Usuário cadastrado com sucesso:", user);
-        setAlertMessage("Verifique seu E-mail");
       } else if (error) {
         if (status === 429) {
-          console.log("Status 429 - Muitas solicitações recentes");
-          setAlertMessage(
-            "Você fez muitas solicitações recentemente. Aguarde um momento."
-          );
+          setAlertMessage("Você fez muitas solicitações recentemente. Aguarde um momento.");
         } else {
-          console.error("Erro durante o cadastro:", error);
           setAlertMessage(error.message);
         }
       }
     } catch (e) {
-      console.error("Erro completo:", e);
       setAlertMessage(e.message);
     }
   };
@@ -70,19 +62,15 @@ export default function Auth() {
         email: email,
         password: password,
       });
-      console.log("User:", user);
-      console.log("Session:", session);
-      console.log("Error:", error);
       if (error) {
         throw error;
       }
       setAlertMessage("Usuário Logando");
-      console.log(user);
-      console.log(session);
     } catch (e) {
       setAlertMessage(e.message);
     }
   };
+
   const changeForm = () => {
     setIsSignUp((value) => !value);
   };
@@ -93,15 +81,10 @@ export default function Auth() {
       const { user, session, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
       });
-      console.log("User:", user);
-      console.log("Session:", session);
-      console.log("Error:", error);
       if (error) {
         throw error;
       }
       setAlertMessage("Usuário Logando");
-      console.log(user);
-      console.log(session);
     } catch (e) {
       setAlertMessage(e.message);
     }
@@ -134,53 +117,37 @@ export default function Auth() {
 
   return (
     <ChakraProvider>
-      <>
-        <ChakraProvider>
-          <Center>
-            {session ? (
-              <p>
-                Usuário: {session.user.email} <br />
-                <Center>
-                  <Button
-                    onClick={() => supabase.auth.signOut()}
-                    colorScheme="red"
-                    size="sm"
-                  >
-                    Sair
-                  </Button>
-                </Center>
-              </p>
-            ) : null}
-          </Center>
-        </ChakraProvider>
-      </>
-      <Center height="60vh">
+      <Center height="100vh" bg={useColorModeValue("gray.50", "gray.800")}>
         <Box
-          p={2}
+          p={6}
           borderWidth="1px"
+          borderRadius="lg"
           maxW="400px"
           width="100%"
-          position="relative"
-          marginTop={5}
+          bg="purple.100"
+          boxShadow="lg"
         >
-          <Heading as="h1" size="xl" textAlign="center" mb={4}>
-            Login
-          </Heading>
-          <FormControl>
+          <Heading as="h1" size="lg" textAlign="center" mb={4} color="purple.700">Sala de Secação ADMIN</Heading>
+          {/* <Heading as="h1" size="lg" textAlign="center" mb={4} color="purple.700">
+            {isSignUp ? "Criar Conta" : "Login"}
+          </Heading> */}
+          <FormControl mb={4}>
             <FormLabel>Email</FormLabel>
             <Input
               type="email"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              bg="white"
             />
           </FormControl>
-          <FormControl mt={4}>
+          <FormControl mb={4}>
             <FormLabel>Senha</FormLabel>
             <InputGroup>
               <Input
                 type={showPassword ? "text" : "password"}
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                bg="white"
               />
               <InputRightElement width="3rem">
                 <Button
@@ -188,46 +155,56 @@ export default function Auth() {
                   size="sm"
                   onClick={togglePasswordVisibility}
                   tabIndex="-1"
+                  color="purple.500"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </Button>
               </InputRightElement>
             </InputGroup>
           </FormControl>
-
           <Link
-            color="purple"
+            display="block"
+            textAlign="center"
+            color="purple.600"
             href="/send-email-password-reset"
+            mb={4}
           >
             Esqueci minha senha
           </Link>
-
-          <Center>
+          <Stack spacing={4} mb={4}>
             {!isSignUp && (
               <Button
-                mt={4}
                 colorScheme="purple"
-                size="md"
                 onClick={handleSignIn}
               >
                 Login
               </Button>
             )}
-          </Center>
-          <br />
+            {isSignUp && (
+              <Button
+                colorScheme="purple"
+                onClick={handleSignUp}
+              >
+                Criar Conta
+              </Button>
+            )}
+          </Stack>
           {alertMessage && (
-            <ChakraProvider>
-              <Alert status="info">
-                <AlertIcon />
-                {alertMessage === "Email not confirmed"
-                  ? "E-mail Não Confirmado"
-                  : alertMessage}
-              </Alert>
-            </ChakraProvider>
+            <Alert status="info" mb={4}>
+              <AlertIcon />
+              {alertMessage}
+            </Alert>
           )}
-          <br />
           <Divider my={4} />
-
+          <Center>
+            {/* <Button
+              leftIcon={<FaGoogle />}
+              colorScheme="purple"
+              onClick={handleGoogleSignIn}
+            >
+              Entrar com Google
+            </Button> */}
+          </Center>
         </Box>
       </Center>
     </ChakraProvider>
