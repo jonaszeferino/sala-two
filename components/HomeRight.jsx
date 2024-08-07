@@ -22,11 +22,15 @@ const HomeRight = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === articles.length - 1 ? 0 : prevIndex + 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === articles.length - 1 ? 0 : prevIndex + 1,
+    );
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? articles.length - 1 : prevIndex - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? articles.length - 1 : prevIndex - 1,
+    );
   };
 
   useEffect(() => {
@@ -66,6 +70,7 @@ const HomeRight = () => {
 
   return (
     <Flex
+      margin={2}
       alignItems="center"
       justifyContent="center"
       w="100%"
@@ -85,7 +90,13 @@ const HomeRight = () => {
         zIndex="1"
         fontSize="40px"
       />
-      <Box w="100%" h="100%" display="flex" flexDirection="column" justifyContent="center">
+      <Box
+        w="100%"
+        h="100%"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+      >
         <Flex overflow="hidden" borderRadius={20} h="100%">
           {articles.length > 0 &&
             articles.map((article, index) => (
@@ -111,7 +122,9 @@ const HomeRight = () => {
                   />
                 </NextLink>
                 <Box p={4} flex="1">
-                  <Text fontSize="xl" fontWeight="bold" maxWidth={590}>{article.article_title}</Text>
+                  <Text fontSize="xl" fontWeight="bold" maxWidth={590}>
+                    {article.article_title}
+                  </Text>
                   <Box pt="20px" w="100%">
                     <Text
                       dangerouslySetInnerHTML={{

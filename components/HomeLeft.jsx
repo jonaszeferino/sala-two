@@ -21,11 +21,15 @@ const HomeLeft = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === news.length - 1 ? 0 : prevIndex + 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === news.length - 1 ? 0 : prevIndex + 1,
+    );
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? news.length - 1 : prevIndex - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? news.length - 1 : prevIndex - 1,
+    );
   };
 
   useEffect(() => {
@@ -50,6 +54,7 @@ const HomeLeft = () => {
 
   return (
     <Flex
+      margin={2}
       alignItems="center"
       justifyContent="center"
       w="100%"
@@ -69,7 +74,13 @@ const HomeLeft = () => {
         zIndex="1"
         fontSize="40px"
       />
-      <Box w="100%" h="100%" display="flex" flexDirection="column" justifyContent="center">
+      <Box
+        w="100%"
+        h="100%"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+      >
         <Flex overflow="hidden" borderRadius={20} h="100%">
           {news.length > 0 &&
             news.map((article, index) => (
@@ -94,7 +105,9 @@ const HomeLeft = () => {
                   />
                 </Link>
                 <Box p={4} flex="1">
-                  <Text fontSize="xl" fontWeight="bold">{article.title}</Text>
+                  <Text fontSize="xl" fontWeight="bold">
+                    {article.title}
+                  </Text>
                   <Text>{article.description}</Text>
                 </Box>
               </Box>
