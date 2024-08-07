@@ -21,7 +21,7 @@ import { FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alertMessage, setAlertMessage] = useState(""); // Estado para a mensagem do Alert
+  const [alertMessage, setAlertMessage] = useState("");
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);

@@ -44,7 +44,6 @@ const News = () => {
     getNews();
   }, []);
 
-  // Função para truncar HTML e preservar a estrutura
   const truncateHtml = (html, maxLength) => {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
@@ -54,7 +53,6 @@ const News = () => {
       text = text.substring(0, maxLength) + '...';
     }
 
-    // Criar um novo div com o texto truncado
     const truncatedDiv = document.createElement('div');
     truncatedDiv.textContent = text;
 

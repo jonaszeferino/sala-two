@@ -17,6 +17,7 @@
     ]
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/next-js": "^2.2.0",
     "@chakra-ui/react": "^2.8.2",
     "@draft-js-plugins/buttons": "^4.3.3",
@@ -24,7 +25,7 @@
     "@draft-js-plugins/static-toolbar": "^4.1.4",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.45.1",
     "@tinymce/tinymce-react": "^4.3.0",
     "axios": "^1.6.1",
     "date-fns": "^2.30.0",
