@@ -69,6 +69,8 @@ const HomeRight = () => {
   };
 
   return (
+    
+    
     <Flex
       margin={2}
       alignItems="center"
@@ -78,6 +80,12 @@ const HomeRight = () => {
       mx="auto"
       position="relative"
       height="600px"
+      _hover={{
+        boxShadow: 'xl',
+        transform: 'scale(1.02)',
+        transition: '0.3s',
+      }}
+  
     >
       <IconButton
         aria-label="Previous Slide"
@@ -88,7 +96,7 @@ const HomeRight = () => {
         top="25%"
         transform="translateY(-50%)"
         zIndex="1"
-        fontSize="48px" // Aumenta o tamanho do ícone
+        fontSize="48px"
         background="none"
         _hover={{ background: 'none' }}
         _active={{ background: 'none' }}
@@ -102,6 +110,8 @@ const HomeRight = () => {
         display="flex"
         flexDirection="column"
         justifyContent="center"
+     
+    
       >
         <Flex overflow="hidden" borderRadius={20} h="100%">
           {articles.length > 0 &&
@@ -114,6 +124,7 @@ const HomeRight = () => {
                 h="100%"
                 flexDirection="column"
                 justifyContent="center"
+            
               >
                 <NextLink href={`/pagina-do-artigo?id=${article.id}`} passHref>
                   <Image

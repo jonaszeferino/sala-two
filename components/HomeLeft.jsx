@@ -62,6 +62,11 @@ const HomeLeft = () => {
       mx="auto"
       position="relative"
       height="600px" // Altura fixa
+      _hover={{
+        boxShadow: 'xl',
+        transform: 'scale(1.02)',
+        transition: '0.3s',
+      }}
     >
       <IconButton
         aria-label="Previous Slide"

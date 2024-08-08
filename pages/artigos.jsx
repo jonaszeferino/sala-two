@@ -83,7 +83,17 @@ const News = () => {
       </Heading>
       <Flex direction="column" gap="20px" w={['80%']}>
         {data.map((item, index) => (
-          <Card key={index} direction="row" overflow="hidden" variant="outline">
+          <Card
+            key={index}
+            direction="row"
+            overflow="hidden"
+            variant="outline"
+            _hover={{
+              boxShadow: 'xl',
+              transform: 'scale(1.02)',
+              transition: '0.3s',
+            }}
+          >
             <Stack direction={['column', 'row']} w="100%">
               <Image
                 objectFit="cover"
