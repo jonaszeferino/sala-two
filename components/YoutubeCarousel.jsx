@@ -21,11 +21,15 @@ const YoutubeCarousel = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === videos.length - 1 ? 0 : prevIndex + 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === videos.length - 1 ? 0 : prevIndex + 1,
+    );
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? videos.length - 1 : prevIndex - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? videos.length - 1 : prevIndex - 1,
+    );
   };
 
   useEffect(() => {
@@ -49,7 +53,20 @@ const YoutubeCarousel = () => {
   }, [currentIndex, videos]);
 
   return (
-    <Flex alignItems="center" justifyContent="center" w="100%" maxW="1200px" mx="auto" position="relative">
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      w="100%"
+      maxW="1200px"
+      mx="auto"
+      position="relative"
+      _hover={{
+        boxShadow: 'xl',
+        transform: 'scale(1.02)',
+        transition: '0.3s',
+        borderRadius: '20px'
+      }}
+    >
       <IconButton
         aria-label="Previous Slide"
         icon={<ChevronLeftIcon />}
@@ -64,14 +81,19 @@ const YoutubeCarousel = () => {
         _hover={{ background: 'none' }}
         _active={{ background: 'none' }}
         sx={{
-          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
-        }} 
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)',
+        }}
       />
       <Box w="100%">
         <Flex overflow="hidden" borderRadius={20}>
-          {videos.length > 0 && (
+          {videos.length > 0 &&
             videos.map((video, index) => (
-              <Box key={video.id} flex="0 0 100%" p={0} display={index === currentIndex ? 'block' : 'none'}>
+              <Box
+                key={video.id}
+                flex="0 0 100%"
+                p={0}
+                display={index === currentIndex ? 'block' : 'none'}
+              >
                 <iframe
                   width="100%"
                   height="500px"
@@ -80,11 +102,13 @@ const YoutubeCarousel = () => {
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  style={{ opacity: index === currentIndex ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
+                  style={{
+                    opacity: index === currentIndex ? 1 : 0,
+                    transition: 'opacity 1s ease-in-out',
+                  }}
                 />
               </Box>
-            ))
-          )}
+            ))}
         </Flex>
       </Box>
       <IconButton
@@ -101,8 +125,8 @@ const YoutubeCarousel = () => {
         _hover={{ background: 'none' }}
         _active={{ background: 'none' }}
         sx={{
-          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
-        }} 
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)',
+        }}
       />
     </Flex>
   );

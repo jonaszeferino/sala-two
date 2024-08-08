@@ -22,13 +22,13 @@ const HomeLeft = () => {
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === news.length - 1 ? 0 : prevIndex + 1
+      prevIndex === news.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? news.length - 1 : prevIndex - 1
+      prevIndex === 0 ? news.length - 1 : prevIndex - 1,
     );
   };
 
@@ -66,6 +66,7 @@ const HomeLeft = () => {
         boxShadow: 'xl',
         transform: 'scale(1.02)',
         transition: '0.3s',
+        borderRadius: '20px',
       }}
     >
       <IconButton
@@ -82,7 +83,7 @@ const HomeLeft = () => {
         _hover={{ background: 'none' }}
         _active={{ background: 'none' }}
         sx={{
-          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)',
         }} // Adiciona o contorno branco ao ícone
       />
       <Box
@@ -136,11 +137,11 @@ const HomeLeft = () => {
         zIndex="1"
         fontSize="48px" // Aumenta o tamanho do ícone
         background="none"
-        _hover={{ background: 'none' }}
+        _hover={{ background: 'none', borderRadius: '20px' }}
         _active={{ background: 'none' }}
         sx={{
-          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
-        }} 
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)',
+        }}
       />
     </Flex>
   );

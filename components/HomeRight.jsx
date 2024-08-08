@@ -84,6 +84,7 @@ const HomeRight = () => {
         boxShadow: 'xl',
         transform: 'scale(1.02)',
         transition: '0.3s',
+        borderRadius: '20px'
       }}
   
     >
@@ -98,7 +99,7 @@ const HomeRight = () => {
         zIndex="1"
         fontSize="48px"
         background="none"
-        _hover={{ background: 'none' }}
+        _hover={{ background: 'none', borderRadius: '20px' }}
         _active={{ background: 'none' }}
         sx={{
           filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
@@ -166,7 +167,7 @@ const HomeRight = () => {
            zIndex="1"
            fontSize="48px" // Aumenta o tamanho do ícone
            background="none"
-           _hover={{ background: 'none' }}
+           _hover={{ background: 'none', borderRadius: '20px' }}
            _active={{ background: 'none' }}
            sx={{
              filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
