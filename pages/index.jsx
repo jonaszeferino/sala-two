@@ -29,9 +29,6 @@ export default function Home() {
 
       <Navbar />
       <br />
-      {/* <Center>
-        <Heading>Qual o seu time?</Heading>
-      </Center> */}
 
       <Center flexDirection="column" gap="10px" mt="10px">
         <Heading>Acompanhe nossos Reacts</Heading>

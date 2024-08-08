@@ -59,7 +59,13 @@ const YoutubeCarousel = () => {
         top="50%"
         transform="translateY(-50%)"
         zIndex="1"
-        fontSize="40px"
+        fontSize="68px" // Aumenta o tamanho do ícone
+        background="none"
+        _hover={{ background: 'none' }}
+        _active={{ background: 'none' }}
+        sx={{
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
+        }} 
       />
       <Box w="100%">
         <Flex overflow="hidden" borderRadius={20}>
@@ -90,7 +96,13 @@ const YoutubeCarousel = () => {
         top="50%"
         transform="translateY(-50%)"
         zIndex="1"
-        fontSize="40px"
+        fontSize="68px" // Aumenta o tamanho do ícone
+        background="none"
+        _hover={{ background: 'none' }}
+        _active={{ background: 'none' }}
+        sx={{
+          filter: 'drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)'
+        }} 
       />
     </Flex>
   );
