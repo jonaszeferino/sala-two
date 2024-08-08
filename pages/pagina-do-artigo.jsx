@@ -10,11 +10,13 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Spinner,
 } from '@chakra-ui/react';
 import moment from 'moment-timezone';
 import { Navbar } from '../components/Navbar';
 import { useRouter } from 'next/router';
 import { Social } from '../components/Social';
+import ShareButtons from '@/components/ShareButtons';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +35,8 @@ const App = () => {
       if (response.ok) {
         const dataRecive = await response.json();
         console.log('Dados do artigo:', dataRecive);
+        setDataNews(Array.isArray(dataRecive) ? dataRecive : []);
         setIsLoading(false);
-        setDataNews(dataRecive);
       } else {
         setIsLoading(false);
         console.error('Erro ao buscar o artigo:', response.status);
@@ -52,6 +54,22 @@ const App = () => {
     }
   }, [id]);
 
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (!dataNews.length) {
+    return (
+      <Center>
+        <Text>Nenhum artigo encontrado.</Text>
+      </Center>
+    );
+  }
+
   return (
     <>
       <ChakraProvider>
@@ -62,9 +80,7 @@ const App = () => {
             <BreadcrumbLink href="/artigos">Artigos</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="/admin/cadastro-veiculos/marcas">
-              Página do Artigo
-            </BreadcrumbLink>
+            <BreadcrumbLink href="#">Página do Artigo</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
 
@@ -127,10 +143,19 @@ const App = () => {
                     </Tag>
                   ))}
               </Center>
+              <br />
+              <br />
+              <Center>
+                <ShareButtons
+                  id={news.id}
+                  title={news.article_title || ''}
+                />
+              </Center>
             </Box>
           ))}
         </Center>
-
+        <br />
+        <br />
         <Center>
           <Social />
         </Center>
