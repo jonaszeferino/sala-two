@@ -31,7 +31,7 @@ const fetchNews = async (apiKey) => {
     //q: '"Grêmio" OR ("Inter" AND (time OR torcida OR campo OR técnico OR jogadores OR treino OR sócio OR dirigentes OR bola))',
 
     searchIn: 'description',
-    excludeDomains: 'ig.com.br,conjur.com.br',
+    excludeDomains: 'ig.com.br,conjur.com.br,infomoney.com.br',
     language: 'pt',
     sortBy: 'publishedAt',
     from: calculateDateAgo(7),
