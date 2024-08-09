@@ -35,7 +35,7 @@ const fetchNews = async (apiKey) => {
     language: 'pt',
     sortBy: 'publishedAt',
     from: calculateDateAgo(7),
-    to: calculateDateAgo(0),
+    to: new Date().toISOString().split('T')[0], // Data de hoje
   };
   const headers = { 'X-No-Cache': true };
   const response = await newsapi.v2.everything(queryOptions, headers);
@@ -65,10 +65,12 @@ const translateNews = (newsFromApi) => {
   });
 
   const filteredNews = news.filter((article) => article.title !== '[Removed]');
-  const gremioNews = filteredNews.filter((article) => article.team === 'Grêmio');
+  const gremioNews = filteredNews.filter(
+    (article) => article.team === 'Grêmio',
+  );
   const interNews = filteredNews.filter((article) => article.team === 'Inter');
-  
-    const minLength = Math.min(gremioNews.length, interNews.length);
+
+  const minLength = Math.min(gremioNews.length, interNews.length);
 
   const translatedNews = [];
 

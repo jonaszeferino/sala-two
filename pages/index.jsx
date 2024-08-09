@@ -39,7 +39,7 @@ export default function Home() {
         <br />
 
         {isMobile ? (
-          <VStack>
+          <VStack>  
             <HomeLeft margin={2} />
             <HomeRight margin={2} />
           </VStack>
