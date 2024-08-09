@@ -178,13 +178,39 @@ async function handleGet(req, res) {
   try {
     const client = await pool.connect();
     try {
-      let queryText = 'SELECT * FROM games ORDER BY match_time DESC';
-      const queryValues = []; 
+      let queryText = `
+        SELECT 
+          g.id, 
+          g.created_at, 
+          g.match_time, 
+          g.stadium, 
+          g.score_home_team, 
+          g.score_away_team, 
+          g.winner, 
+          g.is_deleted, 
+          g.is_visible,
+          g.championship,
+          g.location,
+          ht.name AS home_team_name,
+          ht.logo_image AS home_team_logo,
+          at.name AS away_team_name,
+          at.logo_image AS away_team_logo
+        FROM 
+          games g
+        JOIN 
+          clubs ht ON g.home_team::bigint = ht.id
+        JOIN 
+          clubs at ON g.away_team::bigint = at.id
+  
+      `;
+      const queryValues = [];
 
       if (id) {
-        queryText += ' WHERE id = $1';
+        queryText += ' WHERE g.id = $1';
         queryValues.push(parseInt(id, 10));
       }
+
+      queryText += ' ORDER BY g.match_time ASC';
 
       const result = await client.query(queryText, queryValues);
       res.status(200).json(result.rows);
