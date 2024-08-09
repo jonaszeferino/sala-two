@@ -29,6 +29,7 @@ export default function PalpitesForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [session, setSession] = useState(false);
+  const [championships, setChampionships] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -55,9 +56,21 @@ export default function PalpitesForm() {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-    
+    fetchChampionships();
   }, []);
+
+  const fetchChampionships = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/championship');
+      const data = await response.json();
+      setChampionships(data);
+    } catch (error) {
+      console.error('Erro ao buscar campeonatos:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleChampioship = (event) => {
     setChampionship(event.target.value);
@@ -71,7 +84,7 @@ export default function PalpitesForm() {
     setLogo(event.target.value);
   };
 
-  const saveChampionships = () => {
+  const saveChampionships = async () => {
     setIsSaving(true);
     setIsSave(false);
 
@@ -81,22 +94,28 @@ export default function PalpitesForm() {
       logo_image: logo,
     };
 
-    fetch('/api/postChampionships', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        console.log('Jogo Salo Com Sucesso!', response);
+    try {
+      const response = await fetch('/api/championship', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
+      if (response.ok) {
+        console.log('Campeonato salvo com sucesso!');
         setIsSaving(false);
         setIsSave(true);
-      })
-      .catch((error) => {
-        console.error('Erro ao salvar notícia:', error);
-      });
+        fetchChampionships(); // Atualiza a lista de campeonatos
+      } else {
+        throw new Error('Falha ao salvar o campeonato');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar campeonato:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -168,30 +187,31 @@ export default function PalpitesForm() {
               xl: 'repeat(5, 1fr)',
             }}
             gap={6}
-            marginLeft="100px" // Margem à esquerda
-            marginRight="80px" // Margem à direita
+            marginLeft="100px"
+            marginRight="80px"
           >
             {!isLoading ? (
-              dataGame.map((club) => (
+              championships.map((championship) => (
                 <Box
-                  key={club._id}
+                  key={championship.id}
                   borderWidth="1px"
                   borderRadius="lg"
                   p={4}
-                  width="100%" // Ocupa toda a largura da coluna
+                  width="100%"
                   textAlign="center"
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
                   flexDirection="column"
-                  marginLeft="50px" // Margem interna à esquerda
-                  marginRight="10px" // Margem interna à direita
+                  marginLeft="50px"
+                  marginRight="10px"
                 >
-                  <Text fontWeight="bold">Campeonato {club.name}</Text>
+                  <Text fontWeight="bold">Campeonato {championship.name}</Text>
+                  <Text>Temporada: {championship.season}</Text>
                   <Box boxSize="150px" marginTop="10px">
                     <Image
-                      src={club.logo}
-                      alt="Club Name"
+                      src={championship.logo_image}
+                      alt={championship.name}
                       boxSize="100%"
                       objectFit="cover"
                     />
@@ -200,7 +220,7 @@ export default function PalpitesForm() {
               ))
             ) : (
               <Center mt="100px">
-                <Text>Loading...</Text>
+                <Text>Carregando...</Text>
               </Center>
             )}
           </Grid>

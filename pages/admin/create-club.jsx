@@ -23,6 +23,7 @@ import Auth from "../../components/Auth";
 
 export default function PalpitesForm() {
   const [clubName, setClubName] = useState('');
+  const [completeName, setCompleteName] = useState('');
   const [logo, setLogo] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
@@ -30,36 +31,43 @@ export default function PalpitesForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState(null);
   
-
   //user verify
 
   useEffect(() => {
     setIsLoading(true);
+    fetchClubs(); // Fetch clubs on component mount
   }, []);
 
   const handleClubNameChange = (event) => {
     setClubName(event.target.value);
   };
+  const handleCompleteNameChange = (event) => {
+    setCompleteName(event.target.value);
+  };
   const handleLogoChange = (event) => {
     setLogo(event.target.value);
   };
+
   const InsertClub = async () => {
     setIsSaving(true);
 
     try {
-      await fetch('/api/postClubs', {
+      await fetch('/api/clubs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          club_name: clubName,
-          logo_name: logo,
+          name: clubName,
+          complete_name: completeName,
+          logo_image: logo,
+          country: 'Brasil', // Assuming country is always Brasil
         }),
       });
 
       setIsSaving(false);
       setIsSave(true);
+      fetchClubs(); // Fetch clubs after inserting a new one
 
       return;
     } catch (error) {
@@ -67,13 +75,31 @@ export default function PalpitesForm() {
       console.log('erro', error);
     }
   };
+
+  const fetchClubs = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/clubs', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setClubs(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Botão Salvar clicado');
     await InsertClub();
   };
 
- 
   useEffect(() => {
     let mounted = true;
     async function getInitialSession() {
@@ -119,13 +145,16 @@ export default function PalpitesForm() {
           </Center>
           <ChakraProvider>
             <Center mt="50px">
-              
-              
               <VStack spacing={4} align="stretch">
                 <HStack spacing={4}>
                   <FormControl id="clubName">
                     <FormLabel>Nome do Time</FormLabel>
                     <Input value={clubName} onChange={handleClubNameChange} />
+                  </FormControl>
+
+                  <FormControl id="completeName">
+                    <FormLabel>Nome Completo do Time</FormLabel>
+                    <Input value={completeName} onChange={handleCompleteNameChange} />
                   </FormControl>
 
                   <FormControl id="logo">
@@ -171,7 +200,7 @@ export default function PalpitesForm() {
               {!isLoading ? (
                 clubs.map((club) => (
                   <Box
-                    key={club._id}
+                    key={club.id}
                     borderWidth="1px"
                     borderRadius="lg"
                     p={4}
@@ -184,11 +213,13 @@ export default function PalpitesForm() {
                     marginLeft="50px"
                     marginRight="10px"
                   >
-                    <Text fontWeight="bold">Time: {club.club_name}</Text>
+                    <Text fontWeight="bold">Time: {club.name}</Text>
+                    <Text>{club.complete_name}</Text>
+                    <Text>{club.country}</Text>
                     <Box boxSize="150px" marginTop="10px">
                       <Image
-                        src={club.logo_name}
-                        alt="Club Name"
+                        src={club.logo_image}
+                        alt={club.name}
                         boxSize="100%"
                         objectFit="cover"
                       />

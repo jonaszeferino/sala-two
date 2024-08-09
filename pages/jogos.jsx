@@ -19,28 +19,27 @@ import { useEffect, useState } from 'react';
 
 const Tips = () => {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getGames = async () => {
     try {
-      const response = await fetch(`/api/get-games`, {
+      const response = await fetch(`/api/games`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       if (response.ok) {
-        const userData = await response.json();
-        console.log('Dados do usuário:', userData);
+        const gamesData = await response.json();
+        console.log('Dados dos jogos:', gamesData);
         setIsLoading(false);
-        setData(userData);
+        setData(gamesData);
       } else {
-        if (response.status === 404) {
-          setIsLoading(false);
-        }
-        console.error('Erro ao buscar o usuário:', response.status);
+        setIsLoading(false);
+        console.error('Erro ao buscar os jogos:', response.status);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error('Erro inesperado:', error);
     }
   };
@@ -48,42 +47,7 @@ const Tips = () => {
   useEffect(() => {
     console.log('Chamou o useEffect');
     getGames();
-    setIsLoading(true);
   }, []);
-
-  // Salvar as tips
-
-  const saveTips = async (index) => {
-    setIsLoading(true);
-    const user = 'jonas.zeferino@gmail.com';
-    const { homeTip, awayTip } = data[index];
-
-    try {
-      // Aqui você pode usar diretamente os valores do estado atualizado
-      const response = await fetch('/api/postTips', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          awayTip,
-          homeTip,
-          user,
-        }),
-      });
-
-      if (response.ok) {
-        const { id } = await response.json();
-        console.log('Palpite salvo com sucesso! ID:', id);
-      } else {
-        console.error('Erro ao salvar palpite:', response.status);
-      }
-    } catch (error) {
-      console.error('Erro inesperado ao salvar palpite:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <ChakraProvider>
@@ -96,7 +60,7 @@ const Tips = () => {
 
       <Navbar />
       <Center>
-        <Heading mt="200px">Palpites Dupla Grenal</Heading>
+        <Heading mt="200px">Jogos da Dupla Grenal</Heading>
       </Center>
 
       <Center>
@@ -106,7 +70,7 @@ const Tips = () => {
           ) : (
             data.map((item, index) => (
               <Card
-                key={index}
+                key={item.id}
                 display="flex"
                 overflow="hidden"
                 variant="outline"
@@ -116,14 +80,14 @@ const Tips = () => {
               >
                 <Box mt="20px">
                   <Center>
-                    <Text>{item.date}</Text>
+                    <Text>{new Date(item.match_time).toLocaleString()}</Text>
                     <br />
                   </Center>
                 </Box>
 
                 <Box mt="2px">
                   <Center>
-                    <Text>{item.championship}</Text>
+                    <Text>{item.stadium}</Text>
                     <br />
                   </Center>
                 </Box>
@@ -144,7 +108,7 @@ const Tips = () => {
                       maxW={{ base: '100%', sm: '150px' }}
                       boxSize="150px"
                       borderRadius="10px"
-                      src={item.homeClubData}
+                      src="/path/to/home_team_image" // Substitua pelo caminho correto da imagem
                       alt="Imagem do Time de Casa"
                       loading="lazy"
                       ml="25px"
@@ -153,28 +117,30 @@ const Tips = () => {
                     <Stack>
                       <CardBody>
                         <Center>
-                          <Text>{item.home_club}</Text>
+                          <Text>{item.home_team}</Text>
                         </Center>
                       </CardBody>
                     </Stack>
                   </Box>
 
-                  <FormControl id="clubName" p="10px">
+                  <FormControl id="homeTip" p="10px">
                     <Input
                       id={`homeTip_${index}`}
                       type="number"
-                      value={item.homeTip}
+                      value={item.score_home_team}
+                      readOnly
                     />
                   </FormControl>
 
                   <Center>
                     <Heading>X</Heading>
                   </Center>
-                  <FormControl id="clubName" p="10px">
+                  <FormControl id="awayTip" p="10px">
                     <Input
                       id={`awayTip_${index}`}
                       type="number"
-                      value={item.awayTip}
+                      value={item.score_away_team}
+                      readOnly
                     />
                   </FormControl>
 
@@ -187,7 +153,7 @@ const Tips = () => {
                       maxW={{ base: '100%', sm: '150px' }}
                       boxSize="150px"
                       borderRadius="10px"
-                      src={item.awayClubData}
+                      src="/path/to/away_team_image" // Substitua pelo caminho correto da imagem
                       alt="Imagem do Time de Fora"
                       loading="lazy"
                       mr="25px"
@@ -196,24 +162,18 @@ const Tips = () => {
                     <Stack>
                       <CardBody>
                         <Center>
-                          <Text>{item.away_club}</Text>
+                          <Text>{item.away_team}</Text>
                         </Center>
                       </CardBody>
                     </Stack>
                   </Box>
                 </Box>
 
-                <Box mt="4" textAlign="center">
-                  <Button onClick={() => saveTips(index)}>
-                    Salvar Palpites
-                  </Button>
-                </Box>
               </Card>
             ))
           )}
         </Box>
       </Center>
-
       <Social />
     </ChakraProvider>
   );

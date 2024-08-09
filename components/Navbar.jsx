@@ -68,8 +68,8 @@ export const Navbar = () => {
           <Link as={NextLink} href="/videos" color="white">
             Vídeos
           </Link>
-          <Link as={NextLink} href="/tips" color="white">
-            Palpites
+          <Link as={NextLink} href="/jogos" color="white">
+            Jogos
           </Link>
         </Flex>
       )}
