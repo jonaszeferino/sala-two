@@ -5,13 +5,14 @@ import {
   Text,
   Center,
   Heading,
-  Card,
-  Stack,
-  CardBody,
-  Button,
   Image,
-  FormControl,
-  Input,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  HStack,
 } from '@chakra-ui/react';
 import { Navbar } from '../components/Navbar';
 import { Social } from '../components/Social';
@@ -60,120 +61,72 @@ const Tips = () => {
 
       <Navbar />
       <Center>
-        <Heading mt="200px">Jogos da Dupla Grenal</Heading>
+        <Heading mt="50px">Jogos da Dupla Grenal</Heading>
       </Center>
+      <br/>
 
-      <Center>
-        <Box borderRadius="10px">
-          {isLoading ? (
-            <Text>Carregando...</Text>
-          ) : (
-            data.map((item, index) => (
-              <Card
-                key={item.id}
-                display="flex"
-                overflow="hidden"
-                variant="outline"
-                style={{ margin: '10px' }}
-                mt="120px"
-                width="600px"
-              >
-                <Box mt="20px">
-                  <Center>
-                    <Text>{new Date(item.match_time).toLocaleString()}</Text>
-                    <br />
-                  </Center>
-                </Box>
-
-                <Box mt="2px">
-                  <Center>
-                    <Text>{item.stadium}</Text>
-                    <br />
-                  </Center>
-                </Box>
-                <Center></Center>
-                <Box
-                  display="flex"
-                  flexDirection={{ base: 'column', md: 'row' }}
-                  justifyContent={{ base: 'center', md: 'space-between' }}
-                  alignItems="center"
-                  width="600px"
-                >
-                  <Box
-                    textAlign={{ base: 'center', md: 'left' }}
-                    mb={{ base: '4', md: '0' }}
-                  >
-                    <Image
-                      objectFit="cover"
-                      maxW={{ base: '100%', sm: '150px' }}
-                      boxSize="150px"
-                      borderRadius="10px"
-                      src="/path/to/home_team_image" // Substitua pelo caminho correto da imagem
-                      alt="Imagem do Time de Casa"
-                      loading="lazy"
-                      ml="25px"
-                      mt="25px"
-                    />
-                    <Stack>
-                      <CardBody>
-                        <Center>
-                          <Text>{item.home_team}</Text>
-                        </Center>
-                      </CardBody>
-                    </Stack>
-                  </Box>
-
-                  <FormControl id="homeTip" p="10px">
-                    <Input
-                      id={`homeTip_${index}`}
-                      type="number"
-                      value={item.score_home_team}
-                      readOnly
-                    />
-                  </FormControl>
-
-                  <Center>
-                    <Heading>X</Heading>
-                  </Center>
-                  <FormControl id="awayTip" p="10px">
-                    <Input
-                      id={`awayTip_${index}`}
-                      type="number"
-                      value={item.score_away_team}
-                      readOnly
-                    />
-                  </FormControl>
-
-                  <Box
-                    textAlign={{ base: 'center', md: 'right' }}
-                    ml={{ base: '0', md: '4' }}
-                  >
-                    <Image
-                      objectFit="cover"
-                      maxW={{ base: '100%', sm: '150px' }}
-                      boxSize="150px"
-                      borderRadius="10px"
-                      src="/path/to/away_team_image" // Substitua pelo caminho correto da imagem
-                      alt="Imagem do Time de Fora"
-                      loading="lazy"
-                      mr="25px"
-                      mt="25px"
-                    />
-                    <Stack>
-                      <CardBody>
-                        <Center>
-                          <Text>{item.away_team}</Text>
-                        </Center>
-                      </CardBody>
-                    </Stack>
-                  </Box>
-                </Box>
-
-              </Card>
-            ))
-          )}
+      <Center mt="10px" mb="100px">
+        <Box overflowX="auto" width="100%" maxWidth="900px">
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Data</Th>
+                <Th>Time da Casa</Th>
+                <Th></Th>
+                <Th>Time Visitante</Th>
+                <Th>Estádio</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.map((game) => (
+                <Tr key={game.id}>
+                  <Td>
+                    {(() => {
+                      const utcDate = new Date(game.match_time);
+                      const brasiliaDate = new Date(
+                        utcDate.getTime() - 3 * 60 * 60 * 1000,
+                      );
+                      return brasiliaDate.toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'America/Sao_Paulo',
+                      });
+                    })()}
+                  </Td>
+                  <Td>
+                    <HStack>
+                      <Image
+                        src={game.home_team_logo}
+                        alt={game.home_team_name}
+                        boxSize="30px"
+                        objectFit="contain"
+                      />
+                      <Text>{game.home_team_name}</Text>
+                    </HStack>
+                  </Td>
+                  <Td>VS</Td>
+                  <Td>
+                    <HStack>
+                      <Image
+                        src={game.away_team_logo}
+                        alt={game.away_team_name}
+                        boxSize="30px"
+                        objectFit="contain"
+                      />
+                      <Text>{game.away_team_name}</Text>
+                    </HStack>
+                  </Td>
+                  <Td>{game.stadium}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </Box>
       </Center>
+
       <Social />
     </ChakraProvider>
   );
