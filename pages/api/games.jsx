@@ -25,6 +25,7 @@ async function handleInsert(req, res) {
     winner,
     is_deleted,
     is_visible,
+    championship_id,
   } = req.body;
 
   try {
@@ -42,8 +43,9 @@ async function handleInsert(req, res) {
           score_away_team,
           winner,
           is_deleted,
-          is_visible
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          is_visible,
+          championship_id
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       `;
 
       const queryValues = [
@@ -56,6 +58,7 @@ async function handleInsert(req, res) {
         winner,
         is_deleted,
         is_visible,
+        championship_id,
       ];
 
       await client.query(queryText, queryValues);
@@ -88,6 +91,7 @@ async function handleUpdate(req, res) {
     winner,
     is_deleted,
     is_visible,
+    championship_id,
   } = req.body;
 
   try {
@@ -106,7 +110,8 @@ async function handleUpdate(req, res) {
           score_away_team = $7,
           winner = $8,
           is_deleted = $9,
-          is_visible = $10
+          is_visible = $10,
+          championship_id = $11
         WHERE id = $1
       `;
 
@@ -121,6 +126,7 @@ async function handleUpdate(req, res) {
         winner,
         is_deleted,
         is_visible,
+        championship_id,
       ];
 
       await client.query(queryText, queryValues);
@@ -191,17 +197,20 @@ async function handleGet(req, res) {
           g.is_visible,
           g.championship,
           g.location,
+          g.championship_id,
           ht.name AS home_team_name,
           ht.logo_image AS home_team_logo,
           at.name AS away_team_name,
-          at.logo_image AS away_team_logo
+          at.logo_image AS away_team_logo,
+          c.logo_image AS championship_logo
         FROM 
           games g
         JOIN 
           clubs ht ON g.home_team::bigint = ht.id
         JOIN 
           clubs at ON g.away_team::bigint = at.id
-  
+        LEFT JOIN
+          championship c ON g.championship_id = c.id
       `;
       const queryValues = [];
 

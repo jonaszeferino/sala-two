@@ -63,13 +63,14 @@ const Tips = () => {
       <Center>
         <Heading mt="50px">Jogos da Dupla Grenal</Heading>
       </Center>
-      <br/>
+      <br />
 
       <Center mt="10px" mb="100px">
         <Box overflowX="auto" width="100%" maxWidth="900px">
           <Table variant="simple">
             <Thead>
               <Tr>
+                <Th>Competição</Th>
                 <Th>Data</Th>
                 <Th>Time da Casa</Th>
                 <Th></Th>
@@ -80,6 +81,17 @@ const Tips = () => {
             <Tbody>
               {data.map((game) => (
                 <Tr key={game.id}>
+                  <Td>
+                    <HStack>
+                      <Image
+                        src={game.championship_logo}
+                        alt={game.championship}
+                        boxSize="50px"
+                        objectFit="contain"
+                      />
+                      {/* <Text>{game.championship}</Text> */}
+                    </HStack>
+                  </Td>
                   <Td>
                     {(() => {
                       const utcDate = new Date(game.match_time);
@@ -107,7 +119,7 @@ const Tips = () => {
                       <Text>{game.home_team_name}</Text>
                     </HStack>
                   </Td>
-                  <Td>VS</Td>
+                  <Td>X</Td>
                   <Td>
                     <HStack>
                       <Image

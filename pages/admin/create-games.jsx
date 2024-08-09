@@ -31,7 +31,7 @@ import { useToast } from '@chakra-ui/react';
 export default function PalpitesForm() {
   const [homeClub, setHomeClub] = useState('');
   const [awayClub, setAwayClub] = useState('');
-  
+
   const [clubs, setClubs] = useState([]);
   const [date, setDate] = useState('');
   const [championship, setChampionship] = useState('');
@@ -40,7 +40,7 @@ export default function PalpitesForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [dataGame, setDataGame] = useState([]);
-  const [session,setSession] =useState(false)
+  const [session, setSession] = useState(false);
   const [championships, setChampionships] = useState([]);
   const [stadium, setStadium] = useState('');
   const [games, setGames] = useState([]);
@@ -73,41 +73,19 @@ export default function PalpitesForm() {
     };
   }, []);
 
-  const getGames = async () => {
-    try {
-      const response = await fetch(`/api/getGames`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('Dados do usuário:', userData);
-        setIsLoading(false);
-        setDataGame(userData);
-      } else {
-        if (response.status === 404) {
-          setIsLoading(false);
-        }
-        console.error('Erro ao buscar o usuário:', response.status);
-      }
-    } catch (error) {
-      console.error('Erro inesperado:', error);
-    }
-  };
-
   const fetchGames = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/games');
       if (response.ok) {
         const data = await response.json();
         setGames(data);
+        setDataGame(data);
       } else {
         console.error('Erro ao buscar jogos:', response.status);
         toast({
-          title: "Erro ao carregar jogos",
-          status: "error",
+          title: 'Erro ao carregar jogos',
+          status: 'error',
           duration: 3000,
           isClosable: true,
         });
@@ -115,19 +93,22 @@ export default function PalpitesForm() {
     } catch (error) {
       console.error('Erro inesperado ao buscar jogos:', error);
       toast({
-        title: "Erro ao carregar jogos",
-        description: "Ocorreu um erro inesperado",
-        status: "error",
+        title: 'Erro ao carregar jogos',
+        description: 'Ocorreu um erro inesperado',
+        status: 'error',
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    getGames();
-    setIsLoading(true);
-  }, [toast]);
+    if (session) {
+      fetchGames();
+    }
+  }, [session]);
 
   const handleHomeClubChange = (event) => {
     setHomeClub(event.target.value);
@@ -162,8 +143,8 @@ export default function PalpitesForm() {
       } else {
         console.error('Erro ao buscar os clubes:', response.status);
         toast({
-          title: "Erro ao carregar clubes",
-          status: "error",
+          title: 'Erro ao carregar clubes',
+          status: 'error',
           duration: 3000,
           isClosable: true,
         });
@@ -171,9 +152,9 @@ export default function PalpitesForm() {
     } catch (error) {
       console.error('Erro inesperado:', error);
       toast({
-        title: "Erro ao carregar clubes",
-        description: "Ocorreu um erro inesperado",
-        status: "error",
+        title: 'Erro ao carregar clubes',
+        description: 'Ocorreu um erro inesperado',
+        status: 'error',
         duration: 3000,
         isClosable: true,
       });
@@ -202,7 +183,7 @@ export default function PalpitesForm() {
       winner: null,
       is_deleted: false,
       is_visible: true,
-      championship_id: championship
+      championship_id: championship, // Certifique-se de que este campo está correto
     };
 
     try {
@@ -216,22 +197,29 @@ export default function PalpitesForm() {
 
       if (response.ok) {
         toast({
-          title: "Jogo salvo com sucesso!",
-          status: "success",
+          title: 'Jogo salvo com sucesso!',
+          status: 'success',
           duration: 3000,
           isClosable: true,
         });
         setIsSave(true);
         fetchGames(); // Atualiza a lista de jogos após salvar
+
+        // Limpar os campos após salvar
+        setHomeClub('');
+        setAwayClub('');
+        setDate('');
+        setStadium('');
+        setChampionship('');
       } else {
         throw new Error('Falha ao salvar o jogo');
       }
     } catch (error) {
       console.error('Erro ao salvar jogo:', error);
       toast({
-        title: "Erro ao salvar jogo",
+        title: 'Erro ao salvar jogo',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 3000,
         isClosable: true,
       });
@@ -356,7 +344,9 @@ export default function PalpitesForm() {
             </>
           ) : (
             <Center>
-              <Text>Erro ao carregar o formulário. Por favor, tente novamente.</Text>
+              <Text>
+                Erro ao carregar o formulário. Por favor, tente novamente.
+              </Text>
             </Center>
           )}
 
@@ -374,6 +364,7 @@ export default function PalpitesForm() {
               <Table variant="simple">
                 <Thead>
                   <Tr>
+                    <Th>Competição</Th>
                     <Th>Data</Th>
                     <Th>Time da Casa</Th>
                     <Th></Th>
@@ -385,29 +376,52 @@ export default function PalpitesForm() {
                   {games.map((game) => (
                     <Tr key={game.id}>
                       <Td>
+                        <HStack>
+                          <Image
+                            src={game.championship_logo}
+                            alt={game.championship}
+                            boxSize="50px"
+                            objectFit="contain"
+                          />
+                          {/* <Text>{game.championship}</Text> */}
+                        </HStack>
+                      </Td>
+                      <Td>
                         {(() => {
                           const utcDate = new Date(game.match_time);
-                          const brasiliaDate = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+                          const brasiliaDate = new Date(
+                            utcDate.getTime() - 3 * 60 * 60 * 1000,
+                          );
                           return brasiliaDate.toLocaleString('pt-BR', {
                             day: '2-digit',
                             month: '2-digit',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
-                            timeZone: 'America/Sao_Paulo'
+                            timeZone: 'America/Sao_Paulo',
                           });
                         })()}
                       </Td>
                       <Td>
                         <HStack>
-                          <Image src={game.home_team_logo} alt={game.home_team_name} boxSize="30px" objectFit="contain" />
+                          <Image
+                            src={game.home_team_logo}
+                            alt={game.home_team_name}
+                            boxSize="30px"
+                            objectFit="contain"
+                          />
                           <Text>{game.home_team_name}</Text>
                         </HStack>
                       </Td>
-                      <Td>VS</Td>
+                      <Td>X</Td>
                       <Td>
                         <HStack>
-                          <Image src={game.away_team_logo} alt={game.away_team_name} boxSize="30px" objectFit="contain" />
+                          <Image
+                            src={game.away_team_logo}
+                            alt={game.away_team_name}
+                            boxSize="30px"
+                            objectFit="contain"
+                          />
                           <Text>{game.away_team_name}</Text>
                         </HStack>
                       </Td>
