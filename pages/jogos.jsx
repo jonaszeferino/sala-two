@@ -36,7 +36,10 @@ const Tips = () => {
         const gamesData = await response.json();
         console.log('Dados dos jogos:', gamesData);
         setIsLoading(false);
-        setData(gamesData);
+        // Filtrar jogos futuros
+        const hoje = new Date();
+        const jogosFuturos = gamesData.filter(game => new Date(game.match_time) > hoje);
+        setData(jogosFuturos);
       } else {
         setIsLoading(false);
         console.error('Erro ao buscar os jogos:', response.status);
