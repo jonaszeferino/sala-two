@@ -20,6 +20,7 @@ import LoggedUser from '../../components/LoggedUser';
 import { supabase } from '../../utils/supabaseClientAdmin';
 import Auth from '../../components/Auth';
 import Sidebar from '../../components/Sidebar';
+import ClubFansAdmin from '../../components/ClubFansAdmin';
 
 export default function Home() {
   const [session, setSession] = useState(null);
@@ -65,8 +66,12 @@ export default function Home() {
 
             <Center mt="100px">
               <Heading as="h1" size="2xl">
-                Algumas Métricas futuras
+                Métricas{' '}
               </Heading>
+            </Center>
+            <br />
+            <Center>
+              <ClubFansAdmin />
             </Center>
 
             <Divider />
