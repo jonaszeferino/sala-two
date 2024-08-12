@@ -166,6 +166,18 @@ export default function PalpitesForm() {
   }, []);
 
   const saveGames = async () => {
+    // Verificar se todos os campos necessários estão preenchidos
+    if (!homeClub || !awayClub || !date || !championship || !stadium) {
+      toast({
+        title: 'Erro ao salvar jogo',
+        description: 'Por favor, preencha todos os campos obrigatórios.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setIsSaving(true);
     setIsSave(false);
 
