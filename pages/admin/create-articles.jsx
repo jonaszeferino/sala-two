@@ -41,6 +41,7 @@ const App = () => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [editorHtml, setEditorHtml] = useState('');
   const [session, setSession] = useState(null);
+  const [isDeleting,setIsDeleting] = useState(false);
 
   const toast = useToast();
 
