@@ -10,3 +10,4 @@ export default function App({ Component, pageProps }) {
     </ChakraProvider>
   );
 }
+//GA CODE: G-YB2QWRRN12 ele está no jonaszeferino@gmail.com
