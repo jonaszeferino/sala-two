@@ -166,7 +166,6 @@ export default function PalpitesForm() {
   }, []);
 
   const saveGames = async () => {
-    // Verificar se todos os campos necessários estão preenchidos
     if (!homeClub || !awayClub || !date || !championship || !stadium) {
       toast({
         title: 'Erro ao salvar jogo',
@@ -180,8 +179,6 @@ export default function PalpitesForm() {
 
     setIsSaving(true);
     setIsSave(false);
-
-    // Converter a data do Brasil para UTC
     const brasiliaDate = new Date(date);
     const utcDate = new Date(brasiliaDate.getTime() + 3 * 60 * 60 * 1000);
 
@@ -215,9 +212,7 @@ export default function PalpitesForm() {
           isClosable: true,
         });
         setIsSave(true);
-        fetchGames(); // Atualiza a lista de jogos após salvar
-
-        // Limpar os campos após salvar
+        fetchGames();
         setHomeClub('');
         setAwayClub('');
         setDate('');
@@ -273,11 +268,7 @@ export default function PalpitesForm() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {isLoading ? (
-        <Center>
-          <Text>Carregando...</Text>
-        </Center>
-      ) : session ? (
+      {session ? (
         <ChakraProvider>
           <Sidebar />
           <LoggedUser />
@@ -394,8 +385,7 @@ export default function PalpitesForm() {
                             alt={game.championship}
                             boxSize="50px"
                             objectFit="contain"
-                          />
-                          {/* <Text>{game.championship}</Text> */}
+                          />{' '}
                         </HStack>
                       </Td>
                       <Td>
