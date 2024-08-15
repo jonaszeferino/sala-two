@@ -27,9 +27,8 @@ const fetchNews = async (apiKey) => {
   const newsapi = new NewsAPI(apiKey);
   const queryOptions = {
     q: '"Grêmio" OR ( "Inter" NOT Miami NOT Milão NOT inter-raciais NOT banco inter NOT FMI NOT Polícia NOT CHAMPIONS)',
-    // deveria funcionar assim pela lógica:
-    //q: '"Grêmio" OR ("Inter" AND (time OR torcida OR campo OR técnico OR jogadores OR treino OR sócio OR dirigentes OR bola))',
-
+    
+  
     searchIn: 'description',
     excludeDomains: 'ig.com.br,conjur.com.br,infomoney.com.br',
     language: 'pt',
