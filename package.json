@@ -26,6 +26,7 @@
     "@draft-js-plugins/static-toolbar": "^4.1.4",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@next/third-parties": "^14.2.5",
     "@supabase/supabase-js": "^2.45.1",
     "@tinymce/tinymce-react": "^4.3.0",
     "axios": "^1.6.1",
