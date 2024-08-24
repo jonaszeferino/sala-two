@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 }
 
 async function handlePatch(req, res) {
-  const { id, is_visible, publicated_date } = req.body;
+  const { id, is_visible, publicated_date, site_article } = req.body;
 
   try {
     const client = await pool.connect();
@@ -28,11 +28,11 @@ async function handlePatch(req, res) {
 
       const queryText = `
         UPDATE articles
-        SET is_visible = $1, publicated_date = $2
-        WHERE id = $3
+        SET is_visible = $1, publicated_date = $2, site_article = $3
+        WHERE id = $4
         RETURNING *;
       `;
-      const queryValues = [is_visible, publicationDate, id];
+      const queryValues = [is_visible, publicationDate, site_article, id]; // Adicionado site_article
 
       const result = await client.query(queryText, queryValues);
 

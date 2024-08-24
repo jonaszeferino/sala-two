@@ -35,31 +35,32 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false); // Estado para o modal
   const toast = useToast();
   const cancelRef = React.useRef();
-  const [session, setSession] = useState(false);
+  const [session, setSession] = useState(true);
+  const [siteArticle, setSiteArticle] = useState(null); // Estado para armazenar o valor do site_article
 
-  useEffect(() => {
-    let mounted = true;
-    async function getInitialSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (mounted) {
-        if (session) {
-          setSession(session);
-        }
-      }
-    }
-    getInitialSession();
-    const { subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
-    return () => {
-      mounted = false;
-      subscription?.unsubscribe();
-    };
-  }, []);
+  // useEffect(() => {
+  //   let mounted = true;
+  //   async function getInitialSession() {
+  //     const {
+  //       data: { session },
+  //     } = await supabase.auth.getSession();
+  //     if (mounted) {
+  //       if (session) {
+  //         setSession(session);
+  //       }
+  //     }
+  //   }
+  //   getInitialSession();
+  //   const { subscription } = supabase.auth.onAuthStateChange(
+  //     (_event, session) => {
+  //       setSession(session);
+  //     },
+  //   );
+  //   return () => {
+  //     mounted = false;
+  //     subscription?.unsubscribe();
+  //   };
+  // }, []);
 
   const getNews = async () => {
     try {
@@ -172,7 +173,16 @@ const App = () => {
           id: news_id,
           is_visible: isVisible,
           publicated_date: dateTime[news_id],
+          site_article: siteArticle, // Adicionando site_article aqui
         }),
+      });
+
+      // Log para verificar o que está sendo enviado
+      console.log('Dados enviados para atualização:', {
+        id: news_id,
+        is_visible: isVisible,
+        publicated_date: dateTime[news_id],
+        site_article: siteArticle,
       });
 
       if (response.ok) {
@@ -210,6 +220,56 @@ const App = () => {
       });
     }
   };
+
+  async function handlePatch(req, res) {
+    const { id, is_visible, publicated_date, site_article } = req.body;
+  
+    try {
+      const client = await pool.connect();
+      try {
+        let publicationDate = publicated_date;
+  
+        if (!publicationDate) {
+          publicationDate = moment().tz('America/Sao_Paulo').format('YYYY-MM-DDTHH:mm:ssZ');
+        }
+  
+        // Lógica para definir a descrição com base no valor de site_article
+        let siteArticleDescription;
+        if (site_article === 0) {
+          siteArticleDescription = 'Sala';
+        } else if (site_article === 1) {
+          siteArticleDescription = 'Portfolio Gio';
+        } else {
+          siteArticleDescription = 'Unknown'; // Caso deseje tratar valores fora do esperado
+        }
+  
+        const queryText = `
+          UPDATE articles
+          SET is_visible = $1, publicated_date = $2, site_article = $3
+          WHERE id = $4
+          RETURNING *;
+        `;
+        const queryValues = [is_visible, publicationDate, siteArticleDescription, id];
+  
+        const result = await client.query(queryText, queryValues);
+  
+        if (result.rows.length === 0) {
+          res.status(404).json({ error: 'Article not found' });
+        } else {
+          res.status(200).json(result.rows[0]);
+        }
+      } catch (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: error.message || 'Unknown error' });
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: error.message || 'Unknown error' });
+    }
+  }
+  
 
   const handleDateChange = async (news_id, newDateTime) => {
     try {
@@ -332,6 +392,19 @@ const App = () => {
                       >
                         Atualizar Data e Hora
                       </Button>
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel htmlFor={`site-article-${news.id}`}>
+                        Site do Artigo
+                      </FormLabel>
+                      <select
+                        id={`site-article-${news.id}`}
+                        value={siteArticle}
+                        onChange={(e) => setSiteArticle(e.target.value)}
+                      >
+                        <option value={0}>Sala</option>
+                        <option value={1}>Portfolio Gio</option>
+                      </select>
                     </FormControl>
                     <Flex mt={2}>
                       <Button

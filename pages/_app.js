@@ -11,3 +11,15 @@ export default function App({ Component, pageProps }) {
   );
 }
 //GA CODE: G-YB2QWRRN12 ele está no jonaszeferino@gmail.com
+
+//se eu quiser colocar tags adicionais eu preciso colocar o código do google tag manager
+
+{/* <GoogleAnalytics 
+  gaId="G-YB2QWRRN12" 
+  gtagConfig={{
+    // Configurações adicionais aqui
+  }}
+/> */}
+
+
+
